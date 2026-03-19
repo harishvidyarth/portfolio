@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N. Harish Vidyarth</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" crossorigin="anonymous"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#0a0908;--paper:#f3f0e9;--paper2:#ece7dc;--paper3:#e2dcd0;
+  --red:#b83a24;--navy:#1a3060;--gold:#a8731e;--muted:#7a7268;--rule:rgba(10,9,8,0.09);
+  --fs:'Cormorant Garamond',Georgia,serif;--fm:'Space Mono',monospace;--fd:'DM Sans',sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--ink);font-family:var(--fd);overflow-x:hidden;cursor:none;}
+
+#cur{position:fixed;top:0;left:0;z-index:9000;width:8px;height:8px;background:var(--red);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);mix-blend-mode:multiply;}
+#cur2{position:fixed;top:0;left:0;z-index:8999;width:30px;height:30px;border:1px solid rgba(10,9,8,.3);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);}
+
+nav{position:fixed;top:0;width:100%;z-index:500;display:flex;justify-content:space-between;align-items:center;padding:1.3rem 4rem;mix-blend-mode:multiply;}
+.nlogo{font-family:var(--fs);font-size:1rem;color:var(--ink);text-decoration:none;}
+.nlogo em{font-style:italic;}
+.nlinks{display:flex;gap:2rem;list-style:none;}
+.nlinks a{font-family:var(--fm);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s;}
+.nlinks a:hover{color:var(--ink);}
+
+/* ── HERO ── */
+#hero{position:relative;height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:0 4rem 5rem;}
+#hero-canvas{position:absolute;inset:0;z-index:0;}
+.h-eye{position:relative;z-index:2;font-family:var(--fm);font-size:.56rem;letter-spacing:.24em;text-transform:uppercase;color:var(--red);margin-bottom:1.2rem;opacity:0;transform:translateY(14px);}
+.h-name{position:relative;z-index:2;font-family:var(--fs);font-size:clamp(5rem,12vw,12rem);font-weight:300;line-height:.86;letter-spacing:-.02em;color:var(--ink);opacity:0;transform:translateY(50px);}
+.h-name em{font-style:italic;color:var(--navy);}
+.h-tag{position:relative;z-index:2;font-size:.95rem;font-weight:300;color:var(--muted);margin-top:1.4rem;opacity:0;transform:translateY(14px);}
+.h-scroll{position:absolute;bottom:2rem;right:4rem;z-index:2;writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--fm);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:.5rem;}
+.h-scroll::before{content:'';width:1px;height:50px;background:currentColor;animation:lp 2s ease infinite;}
+@keyframes lp{0%,100%{opacity:.3;transform:scaleY(.3)}50%{opacity:1;transform:scaleY(1)}}
+
+.mq{overflow:hidden;background:var(--ink);padding:.65rem 0;}
+.mq-t{display:flex;gap:2rem;animation:mq 22s linear infinite;white-space:nowrap;}
+.mq-t span{font-family:var(--fm);font-size:.55rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(243,240,233,.35);flex-shrink:0;}
+.mq-t .d{color:var(--red);}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+.sl{font-family:var(--fm);font-size:.54rem;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-bottom:.7rem;}
+.sh{font-family:var(--fs);font-weight:300;line-height:1.02;color:var(--ink);}
+.sh em{font-style:italic;}
+.rv{opacity:0;transform:translateY(22px);}
+
+/* ── ABOUT ── */
+#about{padding:9rem 4rem;display:grid;grid-template-columns:1fr 1fr;gap:8rem;align-items:center;}
+.ab-l .sh{font-size:clamp(3rem,6vw,5.5rem);margin-bottom:1.5rem;}
+.ab-l p{font-size:.95rem;line-height:1.9;color:var(--muted);max-width:440px;}
+.ab-l .chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.8rem;}
+.chip{font-family:var(--fm);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border:1px solid var(--rule);color:var(--muted);border-radius:999px;transition:all .2s;}
+.chip:hover{border-color:var(--navy);color:var(--navy);}
+.ab-r{display:flex;flex-direction:column;}
+.astat{padding:1.8rem 0;border-bottom:1px solid var(--rule);display:flex;align-items:baseline;gap:1.5rem;}
+.astat:first-child{border-top:1px solid var(--rule);}
+.astat-n{font-family:var(--fs);font-weight:300;line-height:1;color:var(--ink);/* size set by JS parallax */font-size:4rem;transition:font-size .1s;}
+.astat-l{font-family:var(--fm);font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+
+/* ── RESEARCH ── */
+#research{padding:8rem 4rem;background:var(--paper2);}
+.res-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3.5rem;padding-bottom:1.2rem;border-bottom:1px solid var(--rule);}
+.res-head .sh{font-size:clamp(2.5rem,5vw,4rem);}
+.res-head-r{font-family:var(--fm);font-size:.55rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);}
+.res-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:2.5rem;margin-bottom:3.5rem;}
+.rcard{padding:1.8rem 2rem;border:1px solid var(--rule);}
+.rcard.feat{border-color:var(--gold);background:rgba(168,115,30,.04);}
+.rb{font-family:var(--fm);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem;}
+.rb::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+.rcard h3{font-family:var(--fs);font-size:1.25rem;font-weight:400;line-height:1.45;color:var(--ink);margin-bottom:.5rem;}
+.rcard p{font-size:.82rem;line-height:1.7;color:var(--muted);}
+.rmeta{font-family:var(--fm);font-size:.53rem;color:var(--muted);margin-top:.8rem;}
+.conf-t{font-family:var(--fm);font-size:.54rem;letter-spacing:.2em;text-transform:uppercase;color:var(--navy);margin-bottom:1.2rem;}
+.conf-scroll{height:220px;overflow:hidden;position:relative;}
+.conf-scroll::after{content:'';position:absolute;bottom:0;left:0;right:0;height:50px;background:linear-gradient(transparent,var(--paper2));pointer-events:none;z-index:1;}
+.conf-inner{display:flex;flex-direction:column;}
+.ci{display:flex;align-items:center;gap:1.5rem;padding:.8rem 0;border-bottom:1px solid var(--rule);}
+.cy{font-family:var(--fm);font-size:.54rem;color:var(--muted);min-width:60px;}
+.cn{font-family:var(--fs);font-size:1.05rem;font-weight:300;color:var(--ink);flex:1;}
+.caw{font-family:var(--fm);font-size:.47rem;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .5rem;background:rgba(168,115,30,.1);color:var(--gold);border-radius:2px;white-space:nowrap;}
+
+/* ── PROJECTS ── */
+#projects{padding:8rem 4rem;background:var(--ink);}
+.pj-hd{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:1.4rem;border-bottom:1px solid rgba(243,240,233,.07);margin-bottom:3.5rem;}
+.pj-hd h2{font-family:var(--fs);font-size:clamp(2.5rem,5vw,4rem);font-weight:300;color:#f3f0e9;}
+.pj-hd h2 em{font-style:italic;color:#c8a46a;}
+.pj-hd span{font-family:var(--fm);font-size:.54rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(243,240,233,.28);}
+.prow{display:grid;grid-template-columns:60px 1fr 190px 50px;align-items:center;gap:2rem;padding:1.7rem 0;border-bottom:1px solid rgba(243,240,233,.06);cursor:pointer;position:relative;overflow:hidden;transition:padding-left .35s;text-decoration:none;color:inherit;}
+.prow::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--red);transform:scaleY(0);transform-origin:bottom;transition:transform .38s cubic-bezier(.25,.46,.45,.94);}
+.prow:hover{padding-left:14px;}.prow:hover::before{transform:scaleY(1);}
+.prow:hover .pnum{color:var(--red);}.prow:hover .pnm{transform:translateX(6px);}
+.pnum{font-family:var(--fm);font-size:.56rem;color:rgba(243,240,233,.2);transition:color .2s;}
+.pnm{font-family:var(--fs);font-size:1.7rem;font-weight:300;color:#f3f0e9;margin-bottom:.25rem;transition:transform .3s;}
+.pmt{font-family:var(--fm);font-size:.6rem;color:rgba(243,240,233,.32);letter-spacing:.07em;}
+.ptags{display:flex;gap:.38rem;flex-wrap:wrap;justify-content:flex-end;}
+.ptag{font-family:var(--fm);font-size:.48rem;letter-spacing:.07em;text-transform:uppercase;padding:.2rem .55rem;border:1px solid rgba(243,240,233,.14);color:rgba(243,240,233,.38);border-radius:999px;}
+.parr{font-size:.9rem;color:rgba(243,240,233,.2);transition:color .3s,transform .3s;}
+.prow:hover .parr{color:var(--red);transform:translateX(4px);}
+.gh-note{font-family:var(--fm);font-size:.52rem;color:rgba(243,240,233,.2);text-align:right;margin-top:1.8rem;}
+
+/* ── SKILLS ── */
+#skills{padding:8rem 4rem;}
+.sk-head{display:grid;grid-template-columns:1fr 2fr;gap:6rem;align-items:start;margin-bottom:4rem;}
+.sk-head .sh{font-size:clamp(2.5rem,5vw,4.5rem);}
+.sk-head p{font-size:.92rem;color:var(--muted);line-height:1.8;max-width:400px;padding-top:.4rem;}
+.sk-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3rem;}
+.sg-t{font-family:var(--fm);font-size:.53rem;letter-spacing:.2em;text-transform:uppercase;color:var(--navy);margin-bottom:1rem;padding-bottom:.6rem;border-bottom:2px solid var(--navy);}
+.si{padding:.65rem 0;border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;gap:.8rem;}
+.sn{font-family:var(--fs);font-size:1.05rem;font-weight:300;color:var(--ink);}
+.sdots{display:flex;gap:4px;}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--rule);transition:background .6s;}
+.sdot.on{background:var(--red);}
+
+/* ── KARATE — Three.js low-poly ── */
+#karate{background:#0d0b0a;display:grid;grid-template-columns:1fr 1fr;min-height:640px;overflow:hidden;}
+.ka-t{padding:6rem 4rem;display:flex;flex-direction:column;justify-content:center;}
+.ka-t .sl{color:#c8a46a;}
+.ka-t .sh{font-size:clamp(2.5rem,5vw,4.5rem);color:#f3f0e9;margin-bottom:1.5rem;}
+.ka-t .sh em{color:#c8a46a;}
+.ka-t p{font-size:.9rem;line-height:1.82;color:rgba(243,240,233,.48);max-width:400px;margin-bottom:.9rem;}
+.kbadges{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.5rem;}
+.kbdg{font-family:var(--fm);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;padding:.28rem .75rem;border-radius:2px;}
+.kblk{background:rgba(10,9,8,.6);color:#c8a46a;border:1px solid rgba(200,164,106,.4);}
+.kwkf{background:rgba(26,48,96,.4);color:#7a9de0;border:1px solid rgba(122,157,224,.35);}
+#karate-canvas{display:block;}
+
+/* ── MUSIC — band scatter ── */
+#music{background:var(--paper3);position:relative;overflow:hidden;height:620px;}
+#music-canvas{position:absolute;inset:0;display:block;}
+.mu-overlay{position:absolute;bottom:3rem;left:4rem;z-index:2;pointer-events:none;}
+.mu-overlay .sl{color:var(--navy);}
+.mu-overlay .sh{font-size:clamp(2.5rem,5vw,5rem);line-height:.92;}
+.mu-overlay .sh em{color:var(--navy);}
+
+/* ── CONTACT ── */
+#contact{padding:9rem 4rem 7rem;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start;}
+.co-l .sh{font-size:clamp(3.5rem,7vw,7.5rem);line-height:.9;margin-bottom:1.5rem;}
+.co-l .sh em{color:var(--red);}
+.co-l p{font-size:.9rem;color:var(--muted);line-height:1.82;max-width:360px;}
+.avail{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--fm);font-size:.54rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:2.5rem;}
+.avail::before{content:'';width:7px;height:7px;border-radius:50%;background:#4caf50;animation:blink 2s ease infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.clink{display:flex;align-items:center;gap:.9rem;padding:.8rem 0;border-bottom:1px solid var(--rule);text-decoration:none;color:var(--ink);transition:color .2s,padding-left .3s;}
+.clink:hover{color:var(--red);padding-left:10px;}
+.cl-label{font-family:var(--fm);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);min-width:48px;}
+.cl-val{font-family:var(--fs);font-size:1.2rem;font-weight:300;}
+.co-cta{display:inline-flex;align-items:center;gap:.8rem;margin-top:2.5rem;padding:.9rem 2rem;border:1px solid var(--ink);font-family:var(--fm);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--ink);transition:background .3s,color .3s;}
+.co-cta:hover{background:var(--ink);color:var(--paper);}
+
+footer{background:var(--ink);color:rgba(243,240,233,.25);display:flex;justify-content:space-between;align-items:center;padding:1.5rem 4rem;font-family:var(--fm);font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;flex-wrap:wrap;gap:.8rem;}
+
+@media(max-width:900px){
+  nav{padding:1.2rem 1.5rem;}.nlinks{gap:1.2rem;}
+  #about,#contact{padding:5rem 1.5rem;grid-template-columns:1fr;gap:3rem;}
+  #research,#projects{padding-left:1.5rem;padding-right:1.5rem;}
+  #skills{padding:5rem 1.5rem;}.sk-head{grid-template-columns:1fr;gap:1.5rem;}.sk-cols{grid-template-columns:1fr;gap:2rem;}
+  #karate{grid-template-columns:1fr;}.ka-t{padding:4rem 1.5rem;}
+  .res-grid{grid-template-columns:1fr;}
+  .prow{grid-template-columns:50px 1fr;}.ptags,.parr{display:none;}
+  footer{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+<div id="cur"></div><div id="cur2"></div>
+
+<nav>
+  <a href="#hero" class="nlogo"><em>Harish</em> Vidyarth</a>
+  <ul class="nlinks">
+    <li><a href="#about">About</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#karate">Martial Arts</a></li>
+    <li><a href="#music">Music</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <p class="h-eye">Cybersecurity · Graph Theory · Martial Arts · Music</p>
+  <h1 class="h-name">N. Harish<br><em>Vidyarth</em></h1>
+  <p class="h-tag">B.E. CSE – Cyber Security &nbsp;·&nbsp; Rajalakshmi Engineering College, Chennai</p>
+  <div class="h-scroll">Scroll</div>
+</section>
+
+<div class="mq"><div class="mq-t">
+  <span>Cybersecurity</span><span class="d">◆</span><span>Graph Theory</span><span class="d">◆</span><span>Parallel Computing</span><span class="d">◆</span><span>Scientific Reports</span><span class="d">◆</span><span>Karate 2nd Dan</span><span class="d">◆</span><span>WKF Judge B</span><span class="d">◆</span><span>Best Paper Award</span><span class="d">◆</span><span>SIH Runner-Up</span><span class="d">◆</span><span>IBM Research</span><span class="d">◆</span><span>ISRO</span><span class="d">◆</span>
+  <span>Cybersecurity</span><span class="d">◆</span><span>Graph Theory</span><span class="d">◆</span><span>Parallel Computing</span><span class="d">◆</span><span>Scientific Reports</span><span class="d">◆</span><span>Karate 2nd Dan</span><span class="d">◆</span><span>WKF Judge B</span><span class="d">◆</span><span>Best Paper Award</span><span class="d">◆</span><span class="d">◆</span><span>SIH Runner-Up</span><span class="d">◆</span><span>IBM Research</span><span class="d">◆</span><span>ISRO</span><span class="d">◆</span>
+</div></div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="ab-l rv">
+    <p class="sl">01 / About</p>
+    <h2 class="sh">Builds.<br>Breaks.<br><em>Defends.</em></h2>
+    <p>First-year B.E. CSE (Cyber Security) student at Rajalakshmi Engineering College. I research graph-theoretic approaches to parallel computing, build security tools, hold a published SCI Q1 paper in Springer Nature — and a 2nd Dan Black Belt.</p>
+    <div class="chips">
+      <span class="chip">REC Chennai</span>
+      <span class="chip">Python · C · JS</span>
+      <span class="chip">Graph Theory</span>
+      <span class="chip">Cyber Security</span>
+      <span class="chip">Tamil · English</span>
+    </div>
+  </div>
+  <div class="ab-r rv">
+    <div class="astat"><span class="astat-n" id="cn1" data-target="9.13" data-dec="2">0</span><span class="astat-l">CGPA · First Year</span></div>
+    <div class="astat"><span class="astat-n" id="cn2" data-target="4" data-dec="0">0</span><span class="astat-l">Live Projects</span></div>
+    <div class="astat"><span class="astat-n" id="cn3" data-target="10" data-dec="0">0</span><span class="astat-l">Conferences & Events</span></div>
+    <div class="astat"><span class="astat-n" id="cn4" data-target="1" data-dec="0">0</span><span class="astat-l">SCI Q1 Publication</span></div>
+  </div>
+</section>
+
+<!-- RESEARCH -->
+<section id="research">
+  <div class="res-head rv">
+    <div><p class="sl">02 / Research</p><h2 class="sh">Graph Theory &amp;<br><em>Parallel Computing</em></h2></div>
+    <span class="res-head-r">Emerging Researcher</span>
+  </div>
+  <div class="res-grid rv">
+    <div class="rcard feat">
+      <div class="rb">SCI · Q1 · IF 3.9 · Springer Nature · 2025</div>
+      <h3>"Average distance between the processors of biswapped networks"</h3>
+      <p>Prabhu, S., Anitha, M., Vidyarth, N.H. et al. Graph-theoretic distance parameters applied to processor network topology — a contribution to parallel computing architecture analysis.</p>
+      <div class="rmeta">doi: 10.1038/s41598-025-29965-5 · Anna University Annexure I</div>
+    </div>
+    <div class="rcard">
+      <div class="rb">Best Paper Award · IC-CAMSTIA 2025</div>
+      <h3>"Wiener Index of Biswapped Networks"</h3>
+      <p>St. Joseph's Engineering College, Chennai. Graph invariants and applications in modern computing and network analysis.</p>
+      <div class="rmeta">Jul 2025 · Dept. of Mathematics</div>
+    </div>
+  </div>
+  <div class="rv">
+    <div class="conf-t">Conferences &amp; Events</div>
+    <div class="conf-scroll"><div class="conf-inner" id="conf-inner">
+      <div class="ci"><span class="cy">Feb 2026</span><span class="cn">PALS – IIT Alumni × IBM Research · Systems for LLMs</span><span class="caw">Merit</span></div>
+      <div class="ci"><span class="cy">Feb 2026</span><span class="cn">ICCE 2026 · Computational Engineering, SIMATS</span></div>
+      <div class="ci"><span class="cy">Jan 2026</span><span class="cn">ISRO Campus Visit · Satish Dhawan Space Centre</span></div>
+      <div class="ci"><span class="cy">Dec 2025</span><span class="cn">Smart India Hackathon 2025</span><span class="caw">Runner-Up</span></div>
+      <div class="ci"><span class="cy">Dec 2025</span><span class="cn">ICGTA-2025 · Amrita Vishwa Vidyapeetham, Coimbatore</span></div>
+      <div class="ci"><span class="cy">Nov 2025</span><span class="cn">ICCE Workshop · Antimagic Labelling · SIMATS</span></div>
+      <div class="ci"><span class="cy">Jun 2025</span><span class="cn">21st ADMA–ICDM 2025 · CUSAT, Kerala</span></div>
+      <div class="ci"><span class="cy">Nov 2024</span><span class="cn">Bebras Computing Challenge 2024</span><span class="caw">#4 India</span></div>
+    </div></div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="pj-hd">
+    <h2 class="rv">Projects</h2>
+    <span class="rv">Click → Opens GitHub</span>
+  </div>
+  <a class="prow rv" href="https://github.com/harishvidyarthcsecs" target="_blank">
+    <span class="pnum">01</span>
+    <div><div class="pnm">Proelium Academy Website</div><div class="pmt">Full-Stack · Live · proeliumacademy.in · Dec 2025</div></div>
+    <div class="ptags"><span class="ptag">Python</span><span class="ptag">Full Stack</span><span class="ptag">SEO</span></div>
+    <span class="parr">→</span>
+  </a>
+  <a class="prow rv" href="https://github.com/harishvidyarthcsecs" target="_blank">
+    <span class="pnum">02</span>
+    <div><div class="pnm">System Hardening Tool</div><div class="pmt">Security · Win/Ubuntu/CentOS · CIS Benchmark · Dec 2025</div></div>
+    <div class="ptags"><span class="ptag">Python</span><span class="ptag">CIS</span><span class="ptag">CLI/GUI</span></div>
+    <span class="parr">→</span>
+  </a>
+  <a class="prow rv" href="https://github.com/harishvidyarthcsecs" target="_blank">
+    <span class="pnum">03</span>
+    <div><div class="pnm">Secure Data Wiping Tool</div><div class="pmt">SIH 2025 · National Runner-Up · NIST SP 800-88</div></div>
+    <div class="ptags"><span class="ptag">Python</span><span class="ptag">NIST</span><span class="ptag">Cross-Platform</span></div>
+    <span class="parr">→</span>
+  </a>
+  <a class="prow rv" href="https://github.com/harishvidyarthcsecs" target="_blank">
+    <span class="pnum">04</span>
+    <div><div class="pnm">ICPC Companion App</div><div class="pmt">Autism Support · Flutter · Android Studio · Dec 2024</div></div>
+    <div class="ptags"><span class="ptag">Flutter</span><span class="ptag">Android</span><span class="ptag">A11y</span></div>
+    <span class="parr">→</span>
+  </a>
+  <p class="gh-note rv">⚠ Remind me — add individual repo URLs per project</p>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="sk-head">
+    <div class="rv"><p class="sl">04 / Skills</p><h2 class="sh">Tools &amp;<br><em>Craft.</em></h2></div>
+    <p class="rv">From low-level C to full-stack Python, network hardening to graph algorithms — a multidisciplinary foundation built through research and production projects.</p>
+  </div>
+  <div class="sk-cols">
+    <div class="rv">
+      <div class="sg-t">Languages</div>
+      <div class="si"><span class="sn">Python</span><div class="sdots" data-level="5"></div></div>
+      <div class="si"><span class="sn">HTML & CSS</span><div class="sdots" data-level="4"></div></div>
+      <div class="si"><span class="sn">C</span><div class="sdots" data-level="4"></div></div>
+      <div class="si"><span class="sn">JavaScript</span><div class="sdots" data-level="4"></div></div>
+    </div>
+    <div class="rv">
+      <div class="sg-t">Security & Research</div>
+      <div class="si"><span class="sn">Graph Theory</span><div class="sdots" data-level="5"></div></div>
+      <div class="si"><span class="sn">Vulnerability Analysis</span><div class="sdots" data-level="4"></div></div>
+      <div class="si"><span class="sn">Network Hardening</span><div class="sdots" data-level="4"></div></div>
+      <div class="si"><span class="sn">Parallel Computing</span><div class="sdots" data-level="4"></div></div>
+    </div>
+    <div class="rv">
+      <div class="sg-t">Frameworks & Tools</div>
+      <div class="si"><span class="sn">Git & GitHub</span><div class="sdots" data-level="4"></div></div>
+      <div class="si"><span class="sn">Django / Flask</span><div class="sdots" data-level="4"></div></div>
+      <div class="si"><span class="sn">MongoDB</span><div class="sdots" data-level="3"></div></div>
+      <div class="si"><span class="sn">Flutter</span><div class="sdots" data-level="3"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- KARATE — Three.js low-poly 3D -->
+<section id="karate">
+  <div class="ka-t">
+    <p class="sl rv">05 / Martial Arts</p>
+    <h2 class="sh rv">The <em>discipline</em><br>that sharpens<br>everything else.</h2>
+    <p class="rv">2nd Dan Black Belt trained under Master D. Nirmal Kumar. Precision, patience, performance under pressure — the same qualities in every paper and every line of code.</p>
+    <p class="rv">WKF Approved Judge B — evaluating international competitions with mastery of technical and ethical standards.</p>
+    <div class="kbadges rv">
+      <span class="kbdg kblk">2nd Dan Black Belt</span>
+      <span class="kbdg kwkf">WKF Judge B</span>
+    </div>
+  </div>
+  <canvas id="karate-canvas"></canvas>
+</section>
+
+<!-- MUSIC -->
+<section id="music">
+  <canvas id="music-canvas"></canvas>
+  <div class="mu-overlay rv">
+    <p class="sl">06 / Music</p>
+    <h2 class="sh">The <em>other</em><br>language.</h2>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="co-l rv">
+    <p class="sl">07 / Contact</p>
+    <h2 class="sh">Start a<br><em>conversation.</em></h2>
+    <p>Open to research collaborations, cybersecurity projects, and interesting ideas. I respond to everything.</p>
+  </div>
+  <div class="co-r rv">
+    <div class="avail">Available for collaboration</div>
+    <a href="mailto:harishvidyarth@gmail.com" class="clink"><span class="cl-label">Email</span><span class="cl-val">harishvidyarth@gmail.com</span></a>
+    <a href="https://linkedin.com/in/harishvidyarth" class="clink" target="_blank"><span class="cl-label">LinkedIn</span><span class="cl-val">linkedin.com/in/harishvidyarth</span></a>
+    <a href="https://github.com/harishvidyarthcsecs" class="clink" target="_blank"><span class="cl-label">GitHub</span><span class="cl-val">github.com/harishvidyarthcsecs</span></a>
+    <a href="tel:+916382551983" class="clink"><span class="cl-label">Phone</span><span class="cl-val">+91 63825 51983</span></a>
+    <a href="mailto:harishvidyarth@gmail.com" class="co-cta">Write to me →</a>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 N. Harish Vidyarth</span>
+  <span>B.E. CSE – Cyber Security · Rajalakshmi Engineering College · Chennai</span>
+  <span>Three.js + GSAP</span>
+</footer>
+
+<script>
+
+
+// Error logging
+window.addEventListener('unhandledrejection', function(e){ console.warn('Unhandled promise:', e.reason); });
+
+// ── ROUNDRECT POLYFILL (Canvas 2D) ──────────────────
+function rrect(ctx,x,y,w,h,r){
+  if(typeof r==='undefined')r=0;
+  if(w<2*r)r=w/2;if(h<2*r)r=h/2;
+  ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+gsap.registerPlugin(ScrollTrigger);
+
+// ══════════════════════════════════════════
+// CURSOR
+// ══════════════════════════════════════════
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function lp(){cur.style.left=mx+'px';cur.style.top=my+'px';rx+=(mx-rx)*.1;ry+=(my-ry)*.1;cur2.style.left=rx+'px';cur2.style.top=ry+'px';requestAnimationFrame(lp);})();
+
+// ══════════════════════════════════════════
+// HERO — Three.js particles + polyhedra
+// ══════════════════════════════════════════
+try{
+(function(){
+  const cv=document.getElementById('hero-canvas');
+  const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
+  R.setPixelRatio(Math.min(devicePixelRatio,2));R.setSize(innerWidth,innerHeight);
+  const S=new THREE.Scene(),C=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,100);
+  C.position.z=5;
+  const N=280,pos=new Float32Array(N*3),sz=new Float32Array(N),vl=new Float32Array(N*3);
+  for(let i=0;i<N;i++){pos[i*3]=(Math.random()-.5)*22;pos[i*3+1]=(Math.random()-.5)*12;pos[i*3+2]=(Math.random()-.5)*7;vl[i*3]=(Math.random()-.5)*.006;vl[i*3+1]=(Math.random()-.5)*.005;sz[i]=.8+Math.random()*3;}
+  const pg=new THREE.BufferGeometry();
+  pg.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  pg.setAttribute('size',new THREE.BufferAttribute(sz,1));
+  const pm=new THREE.ShaderMaterial({
+    uniforms:{uT:{value:0},uM:{value:new THREE.Vector2()}},
+    vertexShader:`attribute float size;uniform float uT;uniform vec2 uM;varying float vA;
+    void main(){vec3 p=position;float d=length(p.xy-uM*5.5);float rep=smoothstep(3.5,0.,d)*.7;
+    p.xy+=normalize(p.xy-uM*5.5+.001)*rep;p.y+=sin(uT*.3+p.x*.5)*.1;p.x+=cos(uT*.25+p.z*.4)*.07;
+    vA=.15+.55*smoothstep(4.,0.,d);vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=size*(280./-mv.z);gl_Position=projectionMatrix*mv;}`,
+    fragmentShader:`varying float vA;void main(){vec2 uv=gl_PointCoord-.5;if(length(uv)>.5)discard;gl_FragColor=vec4(.06,.04,.03,(1.-length(uv)*2.)*vA);}`,
+    transparent:true,depthWrite:false
+  });
+  S.add(new THREE.Points(pg,pm));
+  function mkS(g,x,y,z,c){const m=new THREE.MeshBasicMaterial({color:c,wireframe:true,transparent:true,opacity:.1});const ms=new THREE.Mesh(g,m);ms.position.set(x,y,z);S.add(ms);return ms;}
+  const shapes=[mkS(new THREE.IcosahedronGeometry(1.3,0),3.2,.9,-2,0x1a3060),mkS(new THREE.OctahedronGeometry(.9,0),-3.7,-.4,-1.2,0xb83a24),mkS(new THREE.TetrahedronGeometry(1.,0),.8,2.1,-2.8,0x0a0908),mkS(new THREE.DodecahedronGeometry(.75,0),-1.,-1.8,-1.2,0xa8731e)];
+  const mouse=new THREE.Vector2();
+  window.addEventListener('mousemove',e=>{mouse.x=(e.clientX/innerWidth)*2-1;mouse.y=-(e.clientY/innerHeight)*2+1;});
+  let t=0;
+  (function anim(){requestAnimationFrame(anim);t+=.01;pm.uniforms.uT.value=t;pm.uniforms.uM.value.copy(mouse);
+    const pa=pg.attributes.position.array;
+    for(let i=0;i<N;i++){pa[i*3]+=vl[i*3];pa[i*3+1]+=vl[i*3+1];if(pa[i*3]>11)pa[i*3]=-11;if(pa[i*3]<-11)pa[i*3]=11;if(pa[i*3+1]>6)pa[i*3+1]=-6;if(pa[i*3+1]<-6)pa[i*3+1]=6;}
+    pg.attributes.position.needsUpdate=true;
+    shapes.forEach((s,i)=>{s.rotation.x=t*.24*(i%2?1:-.58);s.rotation.y=t*.33*(i%2?.72:1);s.position.y+=Math.sin(t*.65+i*1.4)*.002;});
+    C.position.x+=(mouse.x*.35-C.position.x)*.03;C.position.y+=(mouse.y*.22-C.position.y)*.03;C.lookAt(0,0,0);
+    R.render(S,C);
+  })();
+  window.addEventListener('resize',()=>{C.aspect=innerWidth/innerHeight;C.updateProjectionMatrix();R.setSize(innerWidth,innerHeight);});
+})();
+}catch(e){console.warn("hero error:", e.message||e);}
+
+// ══════════════════════════════════════════
+// ABOUT — count-up + parallax font-size grow
+// ══════════════════════════════════════════
+const statData=[
+  {id:'cn1',target:9.13,dec:2,min:3,max:7.5},
+  {id:'cn2',target:4,dec:0,min:3,max:7.5},
+  {id:'cn3',target:10,dec:0,min:3,max:7.5},
+  {id:'cn4',target:1,dec:0,min:3,max:7.5},
+];
+// Count up once on enter
+statData.forEach(d=>{
+  const el=document.getElementById(d.id);
+  ScrollTrigger.create({trigger:el,start:'top 88%',once:true,onEnter:()=>{
+    const dur=1400,start=performance.now();
+    (function frame(now){
+      const p=Math.min((now-start)/dur,1);
+      const ease=1-Math.pow(1-p,4);
+      el.textContent=(d.target*ease).toFixed(d.dec);
+      if(p<1)requestAnimationFrame(frame);
+    })(performance.now());
+  }});
+});
+// Parallax font size — grows as you scroll through #about
+ScrollTrigger.create({
+  trigger:'#about',start:'top bottom',end:'bottom top',scrub:true,
+  onUpdate(self){
+    const p=self.progress; // 0 → 1
+    statData.forEach(d=>{
+      const el=document.getElementById(d.id);
+      const size=d.min+(d.max-d.min)*p;
+      el.style.fontSize=size+'rem';
+    });
+  }
+});
+
+// ══════════════════════════════════════════
+// CONF LIST — auto-scroll vertical loop
+// ══════════════════════════════════════════
+try{
+(function(){
+  const inner=document.getElementById('conf-inner');
+  inner.innerHTML+=inner.innerHTML;
+  let off=0,paused=false;
+  inner.parentElement.addEventListener('mouseenter',()=>paused=true);
+  inner.parentElement.addEventListener('mouseleave',()=>paused=false);
+  (function tick(){if(!paused){off+=.5;const half=inner.scrollHeight/2;if(off>=half)off=0;inner.style.transform=`translateY(-${off}px)`;}requestAnimationFrame(tick);})();
+})();
+}catch(e){console.warn("confList error:", e.message||e);}
+
+// ══════════════════════════════════════════
+// SKILLS — dots fill on scroll
+// ══════════════════════════════════════════
+document.querySelectorAll('.sdots').forEach(c=>{
+  const level=parseInt(c.dataset.level)||3;
+  for(let i=0;i<5;i++){const d=document.createElement('div');d.className='sdot';c.appendChild(d);}
+  ScrollTrigger.create({trigger:c,start:'top 90%',once:true,
+    onEnter:()=>c.querySelectorAll('.sdot').forEach((d,i)=>{setTimeout(()=>{if(i<level)d.classList.add('on');},i*80+80);})
+  });
+});
+
+// ══════════════════════════════════════════
+// KARATE — Low-poly 3D Three.js character
+// ══════════════════════════════════════════
+try{
+(function(){
+  const cv=document.getElementById('karate-canvas');
+  // match the right-half size
+  const W=Math.max(window.innerWidth/2,300);
+  const H=640;
+  cv.width=W; cv.height=H;
+  cv.style.width=W+'px'; cv.style.height=H+'px';
+
+  const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
+  R.setPixelRatio(Math.min(devicePixelRatio,2));
+  R.setSize(W,H);
+  R.setClearColor(0x0d0b0a,1);
+
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(45,W/H,.1,100);
+  cam.position.set(0,1.2,7);
+  cam.lookAt(0,.5,0);
+
+  // Lighting — dramatic from above
+  const amb=new THREE.AmbientLight(0xffffff,.25);scene.add(amb);
+  const dir=new THREE.DirectionalLight(0xffeedd,.9);dir.position.set(2,5,3);scene.add(dir);
+  const red=new THREE.PointLight(0xb83a24,1.2,12);red.position.set(-2,1,2);scene.add(red);
+  const rim=new THREE.DirectionalLight(0x3060b8,.5);rim.position.set(-3,2,-2);scene.add(rim);
+
+  // Ground glow
+  const glowGeo=new THREE.CircleGeometry(1.8,32);
+  const glowMat=new THREE.MeshBasicMaterial({color:0xb83a24,transparent:true,opacity:.12,side:THREE.DoubleSide});
+  const glow=new THREE.Mesh(glowGeo,glowMat);glow.rotation.x=-Math.PI/2;glow.position.y=-2.2;scene.add(glow);
+
+  // Colors
+  const GI = new THREE.MeshLambertMaterial({color:0xdedad0});
+  const GI_DARK = new THREE.MeshLambertMaterial({color:0xbbb8ae});
+  const BELT = new THREE.MeshLambertMaterial({color:0x111008});
+  const SKIN = new THREE.MeshLambertMaterial({color:0xc8956c});
+  const HAIR = new THREE.MeshLambertMaterial({color:0x1a1208});
+  const RED_GUARD = new THREE.MeshLambertMaterial({color:0xcc2200});
+  const DARK_LINE = new THREE.MeshLambertMaterial({color:0x2a2820});
+  const GOLD = new THREE.MeshLambertMaterial({color:0xc8a46a,emissive:0x442200,emissiveIntensity:.3});
+
+  const fighter=new THREE.Group();scene.add(fighter);
+
+  function box(w,h,d,mat,px,py,pz,rx=0,ry=0,rz=0){
+    const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
+    m.position.set(px,py,pz);m.rotation.set(rx,ry,rz);
+    return m;
+  }
+  function sphere(r,mat,px,py,pz){
+    const m=new THREE.Mesh(new THREE.SphereGeometry(r,6,5),mat);
+    m.position.set(px,py,pz);return m;
+  }
+  function cone(r,h,mat,px,py,pz,rx=0){
+    const m=new THREE.Mesh(new THREE.ConeGeometry(r,h,4),mat);
+    m.position.set(px,py,pz);m.rotation.x=rx;return m;
+  }
+
+  // HEAD
+  const head=new THREE.Group();
+  head.add(sphere(.38,SKIN,0,0,0)); // main head
+  // jaw wider
+  const jaw=new THREE.Mesh(new THREE.BoxGeometry(.6,.25,.5),SKIN);jaw.position.set(0,-.18,0);head.add(jaw);
+  // HAIR — geometric spikes
+  const hairBase=new THREE.Mesh(new THREE.SphereGeometry(.4,6,4),HAIR);hairBase.scale.set(1,.7,1);hairBase.position.set(0,.08,.0);head.add(hairBase);
+  [[-0.1,.42,-.05,.6],[.15,.38,.1,.5],[-.18,.32,-.1,.45],[.08,.44,-.05,.55],[-.05,.4,.1,.5]].forEach(([x,y,z,s])=>{
+    const spike=new THREE.Mesh(new THREE.ConeGeometry(.1,.35,4),HAIR);spike.position.set(x,y,z);spike.rotation.z=(x>0?-.3:.3);spike.scale.set(1,s,1);head.add(spike);
+  });
+  // eyes — dark flat diamonds
+  const eyeGeo=new THREE.BoxGeometry(.1,.07,.05);
+  const eyeL=new THREE.Mesh(eyeGeo,HAIR);eyeL.position.set(-.14,.02,.36);head.add(eyeL);
+  const eyeR=new THREE.Mesh(eyeGeo,HAIR);eyeR.position.set(.14,.02,.36);head.add(eyeR);
+  // eyebrows — angled inward (angry)
+  const browGeo=new THREE.BoxGeometry(.13,.04,.05);
+  const browL=new THREE.Mesh(browGeo,HAIR);browL.position.set(-.14,.14,.35);browL.rotation.z=.35;head.add(browL);
+  const browR=new THREE.Mesh(browGeo,HAIR);browR.position.set(.14,.14,.35);browR.rotation.z=-.35;head.add(browR);
+  // nose
+  const nose=new THREE.Mesh(new THREE.ConeGeometry(.05,.1,3),SKIN);nose.position.set(0,-.05,.38);nose.rotation.x=-Math.PI/2;head.add(nose);
+  // ears
+  const earGeo=new THREE.BoxGeometry(.06,.14,.1);
+  const earL=new THREE.Mesh(earGeo,SKIN);earL.position.set(-.4,-.05,0);head.add(earL);
+  const earR=new THREE.Mesh(earGeo,SKIN);earR.position.set(.4,-.05,0);head.add(earR);
+  head.position.set(0,1.8,0);fighter.add(head);
+
+  // NECK
+  const neck=box(.18,.22,.18,SKIN,0,1.54,0);fighter.add(neck);
+
+  // TORSO
+  const torso=new THREE.Group();
+  // chest
+  torso.add(box(.9,.55,.45,GI,0,.18,0));
+  // lower torso
+  torso.add(box(.8,.45,.4,GI,0,-.2,0));
+  // lapels
+  const lapelL=new THREE.Mesh(new THREE.BoxGeometry(.08,.5,.42),GI_DARK);lapelL.position.set(-.15,.1,-.01);lapelL.rotation.z=.25;torso.add(lapelL);
+  const lapelR=new THREE.Mesh(new THREE.BoxGeometry(.08,.5,.42),GI_DARK);lapelR.position.set(.15,.1,-.01);lapelR.rotation.z=-.25;torso.add(lapelR);
+  torso.position.set(0,1.05,0);fighter.add(torso);
+
+  // BELT
+  const belt=box(.82,.1,.44,BELT,0,.83,0);fighter.add(belt);
+  const beltKnot=box(.18,.12,.1,BELT,0,.83,.18);fighter.add(beltKnot);
+  // gold stripe on belt
+  const goldStripe=box(.82,.03,.44,GOLD,0,.86,0);fighter.add(goldStripe);
+
+  // ARMS — as groups for rotation
+  // Right arm
+  const rightArm=new THREE.Group();
+  const rUpperArm=box(.18,.42,.18,GI,0,-.2,0);
+  const rForeArm=box(.16,.38,.16,GI,0,-.58,0);
+  const rGuard=new THREE.Mesh(new THREE.BoxGeometry(.22,.22,.22),RED_GUARD);rGuard.position.set(0,-.82,0);
+  // knuckle detail
+  for(let k=-1;k<=1;k++){const kd=new THREE.Mesh(new THREE.BoxGeometry(.06,.06,.08),new THREE.MeshLambertMaterial({color:0xaa1100}));kd.position.set(k*.06,-.88,.08);rightArm.add(kd);}
+  rightArm.add(rUpperArm,rForeArm,rGuard);
+  rightArm.position.set(.58,1.35,0);
+  rightArm.rotation.z=-.2;
+  fighter.add(rightArm);
+
+  // Left arm
+  const leftArm=new THREE.Group();
+  const lUpperArm=box(.18,.42,.18,GI,0,-.2,0);
+  const lForeArm=box(.16,.38,.16,GI,0,-.58,0);
+  const lGuard=new THREE.Mesh(new THREE.BoxGeometry(.22,.22,.22),RED_GUARD);lGuard.position.set(0,-.82,0);
+  leftArm.add(lUpperArm,lForeArm,lGuard);
+  leftArm.position.set(-.58,1.35,0);
+  leftArm.rotation.z=.2;
+  fighter.add(leftArm);
+
+  // HIPS
+  const hips=box(.75,.22,.38,GI,0,.6,0);fighter.add(hips);
+
+  // LEGS — groups for kick animation
+  const rightLeg=new THREE.Group();
+  const rThigh=box(.28,.5,.26,GI,0,-.25,0);
+  const rShin=box(.24,.46,.24,GI,0,-.7,0);
+  const rFoot=new THREE.Mesh(new THREE.BoxGeometry(.22,.12,.36),RED_GUARD);rFoot.position.set(0,-.98,.06);
+  rightLeg.add(rThigh,rShin,rFoot);
+  rightLeg.position.set(.25,.6,0);
+  fighter.add(rightLeg);
+
+  const leftLeg=new THREE.Group();
+  const lThigh=box(.28,.5,.26,GI,0,-.25,0);
+  const lShin=box(.24,.46,.24,GI,0,-.7,0);
+  const lFoot=new THREE.Mesh(new THREE.BoxGeometry(.22,.12,.36),RED_GUARD);lFoot.position.set(0,-.98,.06);
+  leftLeg.add(lThigh,lShin,lFoot);
+  leftLeg.position.set(-.25,.6,0);
+  fighter.add(leftLeg);
+
+  // Ground line
+  const floorGeo=new THREE.PlaneGeometry(6,.01);
+  const floorMat=new THREE.MeshBasicMaterial({color:0x2a2010,transparent:true,opacity:.5});
+  const floor=new THREE.Mesh(floorGeo,floorMat);floor.rotation.x=-Math.PI/2;floor.position.y=-2.2;scene.add(floor);
+
+  // Impact shards — hidden until kick
+  const shards=[];
+  for(let i=0;i<12;i++){
+    const sg=new THREE.Mesh(new THREE.TetrahedronGeometry(.08+Math.random()*.1,0),new THREE.MeshLambertMaterial({color:0xb83a24,transparent:true,opacity:.8}));
+    sg.position.set(.5+Math.random()*.8,(Math.random()-.3)*1.5,Math.random()*.4);sg.visible=false;
+    shards.push({mesh:sg,vx:.04+Math.random()*.06,vy:(Math.random()-.5)*.08,vz:.04+Math.random()*.04,rx:Math.random()*.1,ry:Math.random()*.1});
+    scene.add(sg);
+  }
+
+  // Base pose
+  fighter.position.y=-2.2;
+  fighter.rotation.y=.25; // slight angle
+
+  let prog=0;
+
+  function setPose(p){
+    // p: 0=ready stance, .3=wind-up, .65=kick/punch, .8=hold, 1=return
+
+    let kick,punch,lean;
+    if(p<.25){kick=0;punch=0;lean=0;}
+    else if(p<.62){const t=(p-.25)/.37;kick=t;punch=t;lean=t*.18;}
+    else if(p<.78){kick=1;punch=1;lean=.18;}
+    else{const t=(p-.78)/.22;kick=1-t;punch=1-t;lean=.18*(1-t);}
+
+    // Lean into kick (rotate torso)
+    fighter.rotation.z=-lean*.15;
+    fighter.position.x=lean*.2;
+
+    // Right arm — punch forward (rotate X = forward swing)
+    rightArm.rotation.x=-punch*Math.PI*.55;
+    rightArm.rotation.z=-.2-punch*.1;
+
+    // Left arm — guard raises
+    leftArm.rotation.x=-punch*Math.PI*.2;
+    leftArm.rotation.z=.2+punch*.15;
+
+    // Right leg — KICK
+    const kickAngle=kick*Math.PI*.55;
+    rightLeg.rotation.x=-kickAngle;
+    // Knee snap: lower part of leg extends
+    rShin.rotation.x=kick*Math.PI*.35;
+
+    // Left leg — bends slightly for balance
+    leftLeg.rotation.x=kick*.1;
+
+    // Head looks at kick target
+    head.rotation.x=lean*.1;
+    head.rotation.z=-lean*.1;
+
+    // Shards appear at kick peak
+    const kickPeak=kick>.55?((kick-.55)/.45):0;
+    shards.forEach((s,i)=>{
+      if(kickPeak>.1){
+        s.mesh.visible=true;
+        s.mesh.position.x=.5+Math.cos(i*.5)*kickPeak*.5;
+        s.mesh.position.y=Math.sin(i*.8)*kickPeak*.4;
+        s.mesh.position.z=kickPeak*.3;
+        s.mesh.rotation.x+=s.rx;s.mesh.rotation.y+=s.ry;
+        s.mesh.material.opacity=kickPeak*.8;
+      }else{shards.forEach(s=>s.mesh.visible=false);}
+    });
+
+    // Red light pulses on kick
+    red.intensity=.8+kick*1.8;
+    red.position.x=-1.5+kick*2;
+  }
+
+  let t=0;
+  (function anim(){
+    requestAnimationFrame(anim);t+=.008;
+    // Idle breathing bob
+    if(prog<.05){fighter.position.y=-2.2+Math.sin(t*1.5)*.02;}
+    // Slow auto-rotate when idle
+    if(prog<.05){fighter.rotation.y=.25+Math.sin(t*.4)*.12;}
+    R.render(scene,cam);
+  })();
+
+  ScrollTrigger.create({
+    trigger:'#karate',start:'top 70%',end:'bottom 30%',scrub:2,
+    onUpdate:self=>{prog=self.progress;setPose(prog);}
+  });
+
+  window.addEventListener('resize',()=>{
+    const nW=Math.max(window.innerWidth/2,300);
+    cam.aspect=nW/H;cam.updateProjectionMatrix();R.setSize(nW,H);
+  });
+})();
+}catch(e){console.warn("karate error:", e.message||e);}
+
+// ══════════════════════════════════════════
+// MUSIC — Full band scatter (2D Canvas)
+// ══════════════════════════════════════════
+try{
+(function(){
+  const sec=document.getElementById('music');
+  const cv=document.getElementById('music-canvas');
+  function rsz(){cv.width=sec.offsetWidth||window.innerWidth;cv.height=620;}rsz();
+  const ctx=cv.getContext('2d');
+  let W=cv.width,H=cv.height,scatter=0;
+
+  // Each instrument: start at stage position, scatter to target
+  const band=[
+    {type:'guitar',  sx:()=>W*.22, sy:()=>H*.68, tx:()=>W*.04, ty:()=>-160, tr:-1.2},
+    {type:'drums',   sx:()=>W*.5,  sy:()=>H*.72, tx:()=>W*.48, ty:()=>-240, tr: .15},
+    {type:'keyboard',sx:()=>W*.78, sy:()=>H*.65, tx:()=>W*.96, ty:()=>-130, tr: 1.1},
+    {type:'mic',     sx:()=>W*.42, sy:()=>H*.55, tx:()=>W*.38, ty:()=>-90,  tr:-.4},
+    {type:'headphones',sx:()=>W*.6,sy:()=>H*.5,  tx:()=>W*.72, ty:()=>-80,  tr: .6},
+  ];
+
+  // Notes — rain from sky after scatter
+  const noteSyms=['♩','♪','♫','♬','𝄞','♭','♯'];
+  const notes=Array.from({length:22},(_,i)=>({
+    sym:noteSyms[i%noteSyms.length],
+    x:40+Math.random()*(W-80),y:-20-Math.random()*H*.6,
+    vy:.7+Math.random()*1.3,size:13+Math.random()*18,
+    col:['rgba(26,48,96,.65)','rgba(168,115,30,.6)','rgba(184,58,36,.55)'][i%3]
+  }));
+
+  // ─ Draw functions ─
+  function guitar(ctx,x,y,r,a){
+    if(a<=0)return;ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.globalAlpha=a;
+    const s=.85;
+    ctx.fillStyle='#8b4513';ctx.beginPath();ctx.ellipse(0,18*s,23*s,28*s,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(0,-14*s,18*s,21*s,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#7a3c10';ctx.fillRect(-11*s,-12*s,22*s,26*s);
+    ctx.fillStyle='#2a0e04';ctx.beginPath();ctx.arc(0,6*s,8*s,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#6b3310';ctx.fillRect(-4*s,-95*s,8*s,82*s);
+    ctx.fillStyle='#5a2a08';ctx.beginPath();rrect(ctx,-7*s,-112*s,14*s,22*s,3);ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=.9;
+    for(let i=0;i<6;i++){ctx.beginPath();ctx.moveTo((-5+i*2)*s,-90*s);ctx.lineTo((-2+i*1.1)*s,36*s);ctx.stroke();}
+    ctx.fillStyle='rgba(255,255,255,.14)';ctx.beginPath();ctx.ellipse(-7*s,10*s,5*s,13*s,-.3,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  }
+
+  function drums(ctx,x,y,r,a){
+    if(a<=0)return;ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.globalAlpha=a;
+    const s=.9;
+    // bass drum
+    ctx.fillStyle='#cc2200';ctx.beginPath();ctx.ellipse(0,12*s,34*s,20*s,0,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='rgba(0,0,0,.15)';ctx.beginPath();ctx.ellipse(0,12*s,27*s,13*s,0,0,Math.PI*2);ctx.fill();
+    // bass drum logo
+    ctx.fillStyle='rgba(255,255,255,.15)';ctx.font=`bold ${9*s}px sans-serif`;ctx.textAlign='center';ctx.fillText('HV',0,16*s);
+    // snare
+    ctx.fillStyle='#ddd';ctx.beginPath();ctx.ellipse(-26*s,-10*s,15*s,9*s,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+    // snare rim
+    ctx.strokeStyle='#aaa';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(-26*s,-10*s,15*s,9*s,0,0,Math.PI*2);ctx.stroke();
+    // rack tom
+    ctx.fillStyle='#cc2200';ctx.beginPath();ctx.ellipse(26*s,-12*s,13*s,8*s,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+    // floor tom
+    ctx.fillStyle='#cc2200';ctx.beginPath();ctx.ellipse(34*s,18*s,13*s,8*s,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+    // hi-hat (2 cymbals)
+    ctx.fillStyle='#d4a520';
+    ctx.beginPath();ctx.ellipse(-34*s,-28*s,16*s,5*s,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(-34*s,-35*s,16*s,5*s,0,0,Math.PI*2);ctx.fill();
+    // ride cymbal
+    ctx.beginPath();ctx.ellipse(28*s,-32*s,18*s,5*s,-.1,0,Math.PI*2);ctx.fill();
+    // stands
+    ctx.strokeStyle='rgba(130,130,130,.55)';ctx.lineWidth=2.5*s;
+    ctx.beginPath();ctx.moveTo(0,32*s);ctx.lineTo(-18*s,50*s);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,32*s);ctx.lineTo(18*s,50*s);ctx.stroke();
+    ctx.restore();
+  }
+
+  function keyboard(ctx,x,y,r,a){
+    if(a<=0)return;ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.globalAlpha=a;
+    const s=.85;
+    // body
+    ctx.fillStyle='#111';ctx.beginPath();rrect(ctx,-55*s,-15*s,110*s,34*s,5);ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=1;ctx.stroke();
+    // brand stripe
+    ctx.fillStyle='rgba(184,58,36,.6)';ctx.fillRect(-55*s,-2*s,110*s,2*s);
+    // white keys
+    const wk=18,wkW=110*s/wk;
+    for(let i=0;i<wk;i++){ctx.fillStyle='#f0ede4';ctx.strokeStyle='#bbb';ctx.lineWidth=.5;ctx.beginPath();rrect(ctx,-55*s+i*wkW+1,-13*s,wkW-2,26*s,2);ctx.fill();ctx.stroke();}
+    // black keys
+    const bp=[1,1,0,1,1,1,0,1,1,0,1,1,1,0,1,1,0,1];
+    bp.slice(0,wk).forEach((has,i)=>{if(has){ctx.fillStyle='#111';ctx.beginPath();rrect(ctx,-55*s+i*wkW+wkW*.55,-13*s,wkW*.58,17*s,1);ctx.fill();}});
+    // legs
+    ctx.strokeStyle='rgba(150,150,150,.45)';ctx.lineWidth=3.5*s;
+    ctx.beginPath();ctx.moveTo(-35*s,18*s);ctx.lineTo(-35*s,46*s);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(35*s,18*s);ctx.lineTo(35*s,46*s);ctx.stroke();
+    ctx.restore();
+  }
+
+  function mic(ctx,x,y,r,a){
+    if(a<=0)return;ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.globalAlpha=a;
+    const s=.75;
+    ctx.strokeStyle='rgba(140,140,140,.65)';ctx.lineWidth=3*s;
+    ctx.beginPath();ctx.moveTo(0,65*s);ctx.lineTo(0,-22*s);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(-20*s,65*s);ctx.lineTo(20*s,65*s);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,14*s);ctx.lineTo(32*s,-8*s);ctx.stroke();
+    ctx.fillStyle='#444';ctx.beginPath();ctx.ellipse(32*s,-18*s,10*s,15*s,0,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='rgba(200,200,200,.25)';ctx.lineWidth=.8;
+    for(let i=-4;i<=4;i++){ctx.beginPath();ctx.moveTo(32*s-9*s,(-18+i*3.8)*s);ctx.lineTo(32*s+9*s,(-18+i*3.8)*s);ctx.stroke();}
+    ctx.restore();
+  }
+
+  function headphones(ctx,x,y,r,a){
+    if(a<=0)return;ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.globalAlpha=a;
+    const s=.8;
+    // headband arc
+    ctx.strokeStyle='#222';ctx.lineWidth=8*s;ctx.lineCap='round';
+    ctx.beginPath();ctx.arc(0,-5*s,28*s,Math.PI*.15,Math.PI*.85,true);ctx.stroke();
+    ctx.strokeStyle='#c8a46a';ctx.lineWidth=3*s;
+    ctx.beginPath();ctx.arc(0,-5*s,28*s,Math.PI*.15,Math.PI*.85,true);ctx.stroke();
+    // ear cups
+    [[1,1],[-1,-1]].forEach(([sx])=>{
+      ctx.fillStyle='#1a1a2e';ctx.beginPath();ctx.ellipse(sx*28*s,18*s,12*s,14*s,0,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle='#c8a46a';ctx.lineWidth=2;ctx.stroke();
+      ctx.fillStyle='rgba(200,164,106,.2)';ctx.beginPath();ctx.arc(sx*28*s,18*s,6*s,0,Math.PI*2);ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    // Stage floor
+    const fy=H*.8;
+    const fg=ctx.createLinearGradient(0,fy,0,H);
+    fg.addColorStop(0,'rgba(190,182,165,.5)');fg.addColorStop(1,'rgba(160,154,140,.25)');
+    ctx.fillStyle=fg;ctx.fillRect(0,fy,W,H-fy);
+    ctx.strokeStyle='rgba(10,9,8,.1)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,fy);ctx.lineTo(W,fy);ctx.stroke();
+
+    // Spotlights behind instruments (visible when not scattered)
+    const sAlpha=(1-scatter)*.14;
+    if(sAlpha>.01){
+      [[W*.22,W*.3],[W*.5,W*.45],[W*.78,W*.65]].forEach(([bx,tx])=>{
+        const g=ctx.createLinearGradient(tx,0,bx,fy);
+        g.addColorStop(0,`rgba(255,240,160,${sAlpha})`);g.addColorStop(1,`rgba(255,240,160,0)`);
+        ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(tx,0);ctx.lineTo(bx-70,fy);ctx.lineTo(bx+70,fy);ctx.closePath();ctx.fill();
+      });
+    }
+
+    // Easing
+    const e=1-Math.pow(1-Math.min(scatter,1),3);
+
+    band.forEach(b=>{
+      const sx=b.sx(),sy=b.sy(),tx=b.tx(),ty=b.ty();
+      const ix=sx+(tx-sx)*e;
+      const iy=sy+(ty-sy)*e;
+      const ir=b.tr*e;
+      const ia=Math.max(0,1-e*1.15);
+
+      if(b.type==='guitar')guitar(ctx,ix,iy,ir,ia);
+      else if(b.type==='drums')drums(ctx,ix,iy,ir,ia);
+      else if(b.type==='keyboard')keyboard(ctx,ix,iy,ir,ia);
+      else if(b.type==='mic')mic(ctx,ix,iy,ir,ia);
+      else if(b.type==='headphones')headphones(ctx,ix,iy,ir,ia);
+    });
+
+    // Musical notes rain
+    if(scatter>.18){
+      const na=(scatter-.18)/.82;
+      notes.forEach(n=>{
+        n.y+=n.vy;if(n.y>H+30)n.y=-30;
+        ctx.font=`${n.size}px serif`;ctx.fillStyle=n.col;
+        ctx.globalAlpha=na*.85;ctx.textAlign='center';
+        ctx.fillText(n.sym,n.x,n.y);
+      });
+      ctx.globalAlpha=1;
+    }
+  }
+
+  (function tick(){requestAnimationFrame(tick);draw();})();
+
+  ScrollTrigger.create({
+    trigger:'#music',start:'top 80%',end:'bottom 15%',scrub:1.6,
+    onUpdate:s=>{scatter=s.progress;}
+  });
+
+  window.addEventListener('resize',()=>{rsz();W=cv.width;H=cv.height;});
+})();
+}catch(e){console.warn("music error:", e.message||e);}
+
+// ══════════════════════════════════════════
+// SCROLL REVEALS
+// ══════════════════════════════════════════
+gsap.timeline({delay:.3})
+  .to('.h-eye',{opacity:1,y:0,duration:.9,ease:'power3.out'})
+  .to('.h-name',{opacity:1,y:0,duration:1.3,ease:'power3.out'},'-=.5')
+  .to('.h-tag',{opacity:1,y:0,duration:.8,ease:'power3.out'},'-=.5');
+
+document.querySelectorAll('.rv').forEach(el=>{
+  gsap.to(el,{opacity:1,y:0,duration:.9,ease:'power3.out',
+    scrollTrigger:{trigger:el,start:'top 88%',toggleActions:'play none none none'}
+  });
+});
+</script>
+</body>
+</html>
