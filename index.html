@@ -15,136 +15,192 @@
   --red:#b83a24;--navy:#1a3060;--gold:#a8731e;--muted:#7a7268;--rule:rgba(10,9,8,0.09);
   --fs:'Cormorant Garamond',Georgia,serif;--fm:'Space Mono',monospace;--fd:'DM Sans',sans-serif;
 }
-html{scroll-behavior:smooth;}
-body{background:var(--paper);color:var(--ink);font-family:var(--fd);overflow-x:hidden;cursor:none;}
+html{scroll-behavior:auto;}
+body{background:var(--ink);color:var(--ink);font-family:var(--fd);overflow-x:hidden;cursor:none;}
 
-#cur{position:fixed;top:0;left:0;z-index:9000;width:8px;height:8px;background:var(--red);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);mix-blend-mode:multiply;}
-#cur2{position:fixed;top:0;left:0;z-index:8999;width:30px;height:30px;border:1px solid rgba(10,9,8,.3);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);}
+/* ── SNAP SCROLL ── */
+.snap-container{height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory;scroll-behavior:smooth;}
+.snap-section{scroll-snap-align:start;scroll-snap-stop:always;position:relative;min-height:100vh;}
+.snap-section.tall{min-height:auto;scroll-snap-align:start;}
 
-nav{position:fixed;top:0;width:100%;z-index:500;display:flex;justify-content:space-between;align-items:center;padding:1.3rem 4rem;mix-blend-mode:multiply;}
+/* ── CURSOR ── */
+#cur{position:fixed;top:0;left:0;z-index:9000;width:8px;height:8px;background:var(--red);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);mix-blend-mode:screen;}
+#cur2{position:fixed;top:0;left:0;z-index:8999;width:32px;height:32px;border:1px solid rgba(255,255,255,0.2);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s;}
+body:has(a:hover) #cur2{width:48px;height:48px;border-color:rgba(184,58,36,.6);}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;width:100%;z-index:500;display:flex;justify-content:space-between;align-items:center;padding:1.3rem 4rem;}
 .nlogo{font-family:var(--fs);font-size:1rem;color:var(--ink);text-decoration:none;}
-.nlogo em{font-style:italic;}
+.nlogo em{font-style:italic;color:var(--navy);}
 .nlinks{display:flex;gap:2rem;list-style:none;}
 .nlinks a{font-family:var(--fm);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s;}
 .nlinks a:hover{color:var(--ink);}
+.ndots{display:flex;flex-direction:column;gap:6px;position:fixed;right:2.5rem;top:50%;transform:translateY(-50%);z-index:500;}
+.ndot{width:6px;height:6px;border-radius:50%;background:rgba(243,240,233,.2);cursor:pointer;transition:background .3s,transform .3s;}
+.ndot.active{background:#f3f0e9;transform:scale(1.5);}
 
 /* ── HERO ── */
-#hero{position:relative;height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:0 4rem 5rem;}
+#hero{background:var(--paper);display:flex;flex-direction:column;justify-content:flex-end;padding:0 4rem 5rem;overflow:hidden;}
 #hero-canvas{position:absolute;inset:0;z-index:0;}
-.h-eye{position:relative;z-index:2;font-family:var(--fm);font-size:.56rem;letter-spacing:.24em;text-transform:uppercase;color:var(--red);margin-bottom:1.2rem;opacity:0;transform:translateY(14px);}
-.h-name{position:relative;z-index:2;font-family:var(--fs);font-size:clamp(5rem,12vw,12rem);font-weight:300;line-height:.86;letter-spacing:-.02em;color:var(--ink);opacity:0;transform:translateY(50px);}
+.h-eye{position:relative;z-index:2;font-family:var(--fm);font-size:.56rem;letter-spacing:.24em;text-transform:uppercase;color:var(--red);margin-bottom:1.2rem;opacity:0;transform:translateY(14px);animation:rvFallback .6s ease 1s both;}
+.h-name{position:relative;z-index:2;font-family:var(--fs);font-size:clamp(5rem,11vw,11rem);font-weight:300;line-height:.86;letter-spacing:-.02em;color:var(--ink);opacity:0;transform:translateY(50px);animation:rvFallback .9s ease 1.2s both;}
 .h-name em{font-style:italic;color:var(--navy);}
-.h-tag{position:relative;z-index:2;font-size:.95rem;font-weight:300;color:var(--muted);margin-top:1.4rem;opacity:0;transform:translateY(14px);}
-.h-scroll{position:absolute;bottom:2rem;right:4rem;z-index:2;writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--fm);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:.5rem;}
+.h-tag{position:relative;z-index:2;font-size:.9rem;font-weight:300;color:var(--muted);margin-top:1.4rem;opacity:0;transform:translateY(14px);animation:rvFallback .6s ease 1.5s both;}
+.h-scroll{position:absolute;bottom:2rem;right:4rem;z-index:2;writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--fm);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(243,240,233,.3);display:flex;align-items:center;gap:.5rem;animation:fadeIn 2s 2s both;}
 .h-scroll::before{content:'';width:1px;height:50px;background:currentColor;animation:lp 2s ease infinite;}
 @keyframes lp{0%,100%{opacity:.3;transform:scaleY(.3)}50%{opacity:1;transform:scaleY(1)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
-.mq{overflow:hidden;background:var(--ink);padding:.65rem 0;}
-.mq-t{display:flex;gap:2rem;animation:mq 22s linear infinite;white-space:nowrap;}
-.mq-t span{font-family:var(--fm);font-size:.55rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(243,240,233,.35);flex-shrink:0;}
-.mq-t .d{color:var(--red);}
+/* ── MARQUEE ── */
+.mq{overflow:hidden;background:var(--red);padding:.6rem 0;position:relative;z-index:3;}
+.mq-t{display:flex;gap:2rem;animation:mq 28s linear infinite;white-space:nowrap;}
+.mq-t span{font-family:var(--fm);font-size:.52rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(243,240,233,.6);flex-shrink:0;}
+.mq-t .d{color:rgba(243,240,233,.3);}
 @keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
+/* ── SHARED LABELS ── */
 .sl{font-family:var(--fm);font-size:.54rem;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-bottom:.7rem;}
 .sh{font-family:var(--fs);font-weight:300;line-height:1.02;color:var(--ink);}
 .sh em{font-style:italic;}
-.rv{opacity:0;transform:translateY(22px);}
+.rv{opacity:0;transform:translateY(18px);transition:opacity .8s ease,transform .8s ease;}
+.rv.show{opacity:1;transform:none;}
+@keyframes rvFallback{to{opacity:1;transform:none;}}
+.rv{animation:rvFallback .6s ease 2.5s both;}
 
 /* ── ABOUT ── */
-#about{padding:9rem 4rem;display:grid;grid-template-columns:1fr 1fr;gap:8rem;align-items:center;}
+#about{background:var(--paper);overflow:hidden;}
+#about-canvas{position:absolute;inset:0;z-index:0;opacity:.35;}
+.about-inner{position:relative;z-index:1;padding:9rem 4rem;display:grid;grid-template-columns:1fr 1fr;gap:8rem;align-items:center;min-height:100vh;}
 .ab-l .sh{font-size:clamp(3rem,6vw,5.5rem);margin-bottom:1.5rem;}
-.ab-l p{font-size:.95rem;line-height:1.9;color:var(--muted);max-width:440px;}
+.ab-l p{font-size:.92rem;line-height:1.9;color:var(--muted);max-width:440px;}
 .ab-l .chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.8rem;}
-.chip{font-family:var(--fm);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border:1px solid var(--rule);color:var(--muted);border-radius:999px;transition:all .2s;}
-.chip:hover{border-color:var(--navy);color:var(--navy);}
+.chip{font-family:var(--fm);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border:1px solid var(--rule);color:var(--muted);border-radius:999px;transition:all .3s;}
+.chip:hover{border-color:var(--navy);color:var(--navy);background:rgba(26,48,96,.05);}
 .ab-r{display:flex;flex-direction:column;}
-.astat{padding:1.8rem 0;border-bottom:1px solid var(--rule);display:flex;align-items:baseline;gap:1.5rem;}
+.astat{padding:1.8rem 0;border-bottom:1px solid var(--rule);display:flex;align-items:baseline;gap:1.5rem;overflow:hidden;}
 .astat:first-child{border-top:1px solid var(--rule);}
-.astat-n{font-family:var(--fs);font-weight:300;line-height:1;color:var(--ink);/* size set by JS parallax */font-size:4rem;transition:font-size .1s;}
+.astat-n{font-family:var(--fs);font-weight:300;line-height:1;font-size:5rem;color:var(--ink);}
 .astat-l{font-family:var(--fm);font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
 
 /* ── RESEARCH ── */
-#research{padding:8rem 4rem;background:var(--paper2);}
-.res-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3.5rem;padding-bottom:1.2rem;border-bottom:1px solid var(--rule);}
-.res-head .sh{font-size:clamp(2.5rem,5vw,4rem);}
-.res-head-r{font-family:var(--fm);font-size:.55rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);}
-.res-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:2.5rem;margin-bottom:3.5rem;}
-.rcard{padding:1.8rem 2rem;border:1px solid var(--rule);}
-.rcard.feat{border-color:var(--gold);background:rgba(168,115,30,.04);}
-.rb{font-family:var(--fm);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem;}
-.rb::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0;}
-.rcard h3{font-family:var(--fs);font-size:1.25rem;font-weight:400;line-height:1.45;color:var(--ink);margin-bottom:.5rem;}
-.rcard p{font-size:.82rem;line-height:1.7;color:var(--muted);}
-.rmeta{font-family:var(--fm);font-size:.53rem;color:var(--muted);margin-top:.8rem;}
-.conf-t{font-family:var(--fm);font-size:.54rem;letter-spacing:.2em;text-transform:uppercase;color:var(--navy);margin-bottom:1.2rem;}
-.conf-scroll{height:220px;overflow:hidden;position:relative;}
-.conf-scroll::after{content:'';position:absolute;bottom:0;left:0;right:0;height:50px;background:linear-gradient(transparent,var(--paper2));pointer-events:none;z-index:1;}
-.conf-inner{display:flex;flex-direction:column;}
-.ci{display:flex;align-items:center;gap:1.5rem;padding:.8rem 0;border-bottom:1px solid var(--rule);}
-.cy{font-family:var(--fm);font-size:.54rem;color:var(--muted);min-width:60px;}
-.cn{font-family:var(--fs);font-size:1.05rem;font-weight:300;color:var(--ink);flex:1;}
-.caw{font-family:var(--fm);font-size:.47rem;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .5rem;background:rgba(168,115,30,.1);color:var(--gold);border-radius:2px;white-space:nowrap;}
+#research{background:#0e1a2e;overflow:hidden;position:relative;}
+#research-canvas{position:absolute;inset:0;z-index:0;display:block;}
+.research-inner{position:relative;z-index:1;padding:7rem 4rem;min-height:100vh;display:flex;flex-direction:column;justify-content:center;}
+.res-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3rem;padding-bottom:1.2rem;border-bottom:1px solid rgba(255,255,255,.1);}
+.res-head .sh{font-size:clamp(2.5rem,5vw,4rem);color:#f3f0e9;}
+.res-head .sh em{color:var(--gold);}
+.res-head-r{font-family:var(--fm);font-size:.55rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(243,240,233,.3);}
+.res-head .sl{color:var(--gold);}
+.res-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:1.5rem;margin-bottom:2.5rem;}
+/* Glassmorphism cards */
+.rcard{
+  padding:2rem;
+  background:rgba(255,255,255,0.06);
+  backdrop-filter:blur(18px) saturate(180%);
+  -webkit-backdrop-filter:blur(18px) saturate(180%);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:12px;
+  position:relative;overflow:hidden;
+  transition:transform .35s cubic-bezier(.25,.46,.45,.94),border-color .3s,background .3s,box-shadow .3s;
+}
+/* Shimmer on hover */
+.rcard::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.08) 0%,rgba(255,255,255,0) 60%);
+  opacity:0;transition:opacity .4s;border-radius:inherit;
+}
+.rcard::after{
+  content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);
+  transition:left .6s ease;
+}
+.rcard:hover{transform:translateY(-5px) scale(1.01);border-color:rgba(168,115,30,.5);background:rgba(255,255,255,0.1);box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 0 1px rgba(168,115,30,.2),inset 0 1px 0 rgba(255,255,255,.15);}
+.rcard:hover::before{opacity:1;}
+.rcard:hover::after{left:120%;}
+.rcard.feat{background:rgba(168,115,30,0.1);border-color:rgba(168,115,30,.3);}
+.rcard.feat:hover{background:rgba(168,115,30,0.15);}
+.rb{font-family:var(--fm);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;}
+.rb::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0;box-shadow:0 0 8px var(--gold);}
+.rcard h3{font-family:var(--fs);font-size:1.3rem;font-weight:300;line-height:1.4;color:#f3f0e9;margin-bottom:.6rem;}
+.rcard p{font-size:.82rem;line-height:1.75;color:rgba(243,240,233,.55);}
+.rmeta{font-family:var(--fm);font-size:.52rem;color:rgba(168,115,30,.7);margin-top:1rem;}
 
-/* ── PROJECTS ── */
-#projects{padding:8rem 4rem;background:var(--ink);}
-.pj-hd{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:1.4rem;border-bottom:1px solid rgba(243,240,233,.07);margin-bottom:3.5rem;}
-.pj-hd h2{font-family:var(--fs);font-size:clamp(2.5rem,5vw,4rem);font-weight:300;color:#f3f0e9;}
-.pj-hd h2 em{font-style:italic;color:#c8a46a;}
-.pj-hd span{font-family:var(--fm);font-size:.54rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(243,240,233,.28);}
-.prow{display:grid;grid-template-columns:60px 1fr 190px 50px;align-items:center;gap:2rem;padding:1.7rem 0;border-bottom:1px solid rgba(243,240,233,.06);cursor:pointer;position:relative;overflow:hidden;transition:padding-left .35s;text-decoration:none;color:inherit;}
-.prow::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--red);transform:scaleY(0);transform-origin:bottom;transition:transform .38s cubic-bezier(.25,.46,.45,.94);}
-.prow:hover{padding-left:14px;}.prow:hover::before{transform:scaleY(1);}
-.prow:hover .pnum{color:var(--red);}.prow:hover .pnm{transform:translateX(6px);}
-.pnum{font-family:var(--fm);font-size:.56rem;color:rgba(243,240,233,.2);transition:color .2s;}
-.pnm{font-family:var(--fs);font-size:1.7rem;font-weight:300;color:#f3f0e9;margin-bottom:.25rem;transition:transform .3s;}
-.pmt{font-family:var(--fm);font-size:.6rem;color:rgba(243,240,233,.32);letter-spacing:.07em;}
-.ptags{display:flex;gap:.38rem;flex-wrap:wrap;justify-content:flex-end;}
-.ptag{font-family:var(--fm);font-size:.48rem;letter-spacing:.07em;text-transform:uppercase;padding:.2rem .55rem;border:1px solid rgba(243,240,233,.14);color:rgba(243,240,233,.38);border-radius:999px;}
-.parr{font-size:.9rem;color:rgba(243,240,233,.2);transition:color .3s,transform .3s;}
-.prow:hover .parr{color:var(--red);transform:translateX(4px);}
-.gh-note{font-family:var(--fm);font-size:.52rem;color:rgba(243,240,233,.2);text-align:right;margin-top:1.8rem;}
+/* ── CONFERENCES timeline — glass cards ── */
+.conf-section{margin-top:0;}
+.conf-label{font-family:var(--fm);font-size:.54rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(243,240,233,.4);margin-bottom:1.2rem;}
+.conf-timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;}
+.ct-card{
+  position:relative;padding:1rem .9rem 1rem .85rem;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:8px;
+  transition:transform .3s,border-color .3s,background .3s,box-shadow .3s;
+  cursor:default;overflow:hidden;
+}
+.ct-card::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--gold),rgba(168,115,30,.3));transform:scaleY(0);transition:transform .4s cubic-bezier(.25,.46,.45,.94);transform-origin:bottom;border-radius:3px 0 0 3px;}
+.ct-card:hover::after{transform:scaleY(1);}
+.ct-card:hover{transform:translateY(-3px);border-color:rgba(168,115,30,.35);background:rgba(168,115,30,0.08);box-shadow:0 8px 32px rgba(0,0,0,.3);}
+.ct-award{display:inline-flex;align-items:center;font-family:var(--fm);font-size:.44rem;letter-spacing:.1em;text-transform:uppercase;padding:.15rem .45rem;background:rgba(168,115,30,.2);color:var(--gold);border-radius:3px;margin-bottom:.4rem;border:1px solid rgba(168,115,30,.3);}
+.ct-year{font-family:var(--fm);font-size:.5rem;color:rgba(243,240,233,.3);margin-bottom:.3rem;display:block;}
+.ct-name{font-family:var(--fs);font-size:.88rem;font-weight:300;color:rgba(243,240,233,.85);line-height:1.4;}
+
+/* ── PROJECTS — full-screen VS Code editor ── */
+#projects{background:#1e1e1e;overflow:hidden;}
+#projects-canvas{position:absolute;inset:0;z-index:0;width:100%;height:100%;}
+.projects-inner{display:none;}/* all content is in the canvas */
+.editor-pane{display:none;}
 
 /* ── SKILLS ── */
-#skills{padding:8rem 4rem;}
+#skills{background:var(--paper2);overflow:hidden;}
+#skills-canvas{position:absolute;inset:0;z-index:0;opacity:.35;}
+.skills-inner{position:relative;z-index:1;padding:7rem 4rem;min-height:100vh;display:flex;flex-direction:column;justify-content:center;}
 .sk-head{display:grid;grid-template-columns:1fr 2fr;gap:6rem;align-items:start;margin-bottom:4rem;}
 .sk-head .sh{font-size:clamp(2.5rem,5vw,4.5rem);}
-.sk-head p{font-size:.92rem;color:var(--muted);line-height:1.8;max-width:400px;padding-top:.4rem;}
+.sk-head p{font-size:.9rem;color:var(--muted);line-height:1.85;max-width:400px;padding-top:.4rem;}
 .sk-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3rem;}
 .sg-t{font-family:var(--fm);font-size:.53rem;letter-spacing:.2em;text-transform:uppercase;color:var(--navy);margin-bottom:1rem;padding-bottom:.6rem;border-bottom:2px solid var(--navy);}
 .si{padding:.65rem 0;border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;gap:.8rem;}
 .sn{font-family:var(--fs);font-size:1.05rem;font-weight:300;color:var(--ink);}
 .sdots{display:flex;gap:4px;}
-.sdot{width:7px;height:7px;border-radius:50%;background:var(--rule);transition:background .6s;}
+.sdot{width:7px;height:7px;border-radius:50%;background:rgba(10,9,8,.1);transition:background .5s;}
 .sdot.on{background:var(--red);}
 
-/* ── KARATE — Three.js low-poly ── */
-#karate{background:#0d0b0a;display:grid;grid-template-columns:1fr 1fr;min-height:640px;overflow:hidden;}
-.ka-t{padding:6rem 4rem;display:flex;flex-direction:column;justify-content:center;}
-.ka-t .sl{color:#c8a46a;}
+/* ── KARATE ── */
+#karate{background:#08060a;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;}
+#karate-bg{position:absolute;inset:0;z-index:0;}
+.ka-t{position:relative;z-index:2;padding:6rem 4rem;display:flex;flex-direction:column;justify-content:center;}
+.ka-t .sl{color:var(--gold);}
 .ka-t .sh{font-size:clamp(2.5rem,5vw,4.5rem);color:#f3f0e9;margin-bottom:1.5rem;}
-.ka-t .sh em{color:#c8a46a;}
-.ka-t p{font-size:.9rem;line-height:1.82;color:rgba(243,240,233,.48);max-width:400px;margin-bottom:.9rem;}
+.ka-t .sh em{color:var(--gold);}
+.ka-t p{font-size:.88rem;line-height:1.85;color:rgba(243,240,233,.5);max-width:400px;margin-bottom:.8rem;}
 .kbadges{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.5rem;}
 .kbdg{font-family:var(--fm);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;padding:.28rem .75rem;border-radius:2px;}
-.kblk{background:rgba(10,9,8,.6);color:#c8a46a;border:1px solid rgba(200,164,106,.4);}
-.kwkf{background:rgba(26,48,96,.4);color:#7a9de0;border:1px solid rgba(122,157,224,.35);}
-#karate-canvas{display:block;}
+.kblk{background:rgba(168,115,30,.12);color:var(--gold);border:1px solid rgba(168,115,30,.3);}
+.kwkf{background:rgba(26,48,96,.3);color:#7a9de0;border:1px solid rgba(122,157,224,.35);}
+#karate-canvas{position:relative;z-index:2;display:block;width:100%;height:100vh;}
 
-/* ── MUSIC — band scatter ── */
-#music{background:var(--paper3);position:relative;overflow:hidden;height:620px;}
-#music-canvas{position:absolute;inset:0;display:block;}
-.mu-overlay{position:absolute;bottom:3rem;left:4rem;z-index:2;pointer-events:none;}
-.mu-overlay .sl{color:var(--navy);}
-.mu-overlay .sh{font-size:clamp(2.5rem,5vw,5rem);line-height:.92;}
-.mu-overlay .sh em{color:var(--navy);}
+/* ── MUSIC ── */
+#music{background:#05040d;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:4rem;}
+#music-canvas{position:absolute;inset:0;z-index:0;display:block;}
+.mu-content{position:relative;z-index:2;}
+.mu-content .sl{color:#a067d0;}
+.mu-content .sh{font-size:clamp(3rem,6vw,5.5rem);color:#f3f0e9;line-height:.9;}
+.mu-content .sh em{color:#a067d0;font-style:italic;}
+.mu-content p{font-size:.88rem;color:rgba(243,240,233,.4);margin-top:.8rem;max-width:380px;line-height:1.8;}
+.mu-bands{display:flex;gap:.6rem;margin-top:1.2rem;flex-wrap:wrap;}
+.mu-tag{font-family:var(--fm);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .7rem;border:1px solid rgba(160,103,208,.3);color:rgba(160,103,208,.7);border-radius:2px;}
 
 /* ── CONTACT ── */
-#contact{padding:9rem 4rem 7rem;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start;}
+#contact{background:var(--paper);overflow:hidden;}
+#contact-canvas{position:absolute;inset:0;z-index:0;opacity:.3;}
+.contact-inner{position:relative;z-index:1;padding:9rem 4rem 7rem;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start;min-height:100vh;}
 .co-l .sh{font-size:clamp(3.5rem,7vw,7.5rem);line-height:.9;margin-bottom:1.5rem;}
 .co-l .sh em{color:var(--red);}
 .co-l p{font-size:.9rem;color:var(--muted);line-height:1.82;max-width:360px;}
 .avail{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--fm);font-size:.54rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:2.5rem;}
-.avail::before{content:'';width:7px;height:7px;border-radius:50%;background:#4caf50;animation:blink 2s ease infinite;}
+.avail::before{content:'';width:7px;height:7px;border-radius:50%;background:#4caf50;animation:blink 2s ease infinite;flex-shrink:0;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
 .clink{display:flex;align-items:center;gap:.9rem;padding:.8rem 0;border-bottom:1px solid var(--rule);text-decoration:none;color:var(--ink);transition:color .2s,padding-left .3s;}
 .clink:hover{color:var(--red);padding-left:10px;}
@@ -153,173 +209,177 @@ nav{position:fixed;top:0;width:100%;z-index:500;display:flex;justify-content:spa
 .co-cta{display:inline-flex;align-items:center;gap:.8rem;margin-top:2.5rem;padding:.9rem 2rem;border:1px solid var(--ink);font-family:var(--fm);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--ink);transition:background .3s,color .3s;}
 .co-cta:hover{background:var(--ink);color:var(--paper);}
 
-footer{background:var(--ink);color:rgba(243,240,233,.25);display:flex;justify-content:space-between;align-items:center;padding:1.5rem 4rem;font-family:var(--fm);font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;flex-wrap:wrap;gap:.8rem;}
+footer{background:var(--ink);color:rgba(243,240,233,.2);display:flex;justify-content:space-between;align-items:center;padding:1.5rem 4rem;font-family:var(--fm);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;flex-wrap:wrap;gap:.8rem;position:relative;z-index:1;}
+
+/* ── PARALLAX DIVIDER ── */
+.parallax-band{height:3px;background:linear-gradient(90deg,var(--red),var(--gold),var(--navy));position:relative;z-index:10;overflow:visible;}
 
 @media(max-width:900px){
-  nav{padding:1.2rem 1.5rem;}.nlinks{gap:1.2rem;}
-  #about,#contact{padding:5rem 1.5rem;grid-template-columns:1fr;gap:3rem;}
-  #research,#projects{padding-left:1.5rem;padding-right:1.5rem;}
-  #skills{padding:5rem 1.5rem;}.sk-head{grid-template-columns:1fr;gap:1.5rem;}.sk-cols{grid-template-columns:1fr;gap:2rem;}
-  #karate{grid-template-columns:1fr;}.ka-t{padding:4rem 1.5rem;}
+  nav{padding:1.2rem 1.5rem;}.nlinks{display:none;}
+  .ndots{display:none;}
+  #about .about-inner,#contact .contact-inner{padding:5rem 1.5rem;grid-template-columns:1fr;gap:3rem;}
+  .research-inner,.projects-inner,.skills-inner{padding:4rem 1.5rem;}
   .res-grid{grid-template-columns:1fr;}
+  .conf-timeline{grid-template-columns:1fr 1fr;}
+  .sk-head{grid-template-columns:1fr;gap:1.5rem;}.sk-cols{grid-template-columns:1fr;gap:2rem;}
+  #karate{grid-template-columns:1fr;min-height:auto;}
+  #karate-canvas{height:50vh;}
+  .ka-t{padding:4rem 1.5rem;}
   .prow{grid-template-columns:50px 1fr;}.ptags,.parr{display:none;}
-  footer{flex-direction:column;}
+  footer{flex-direction:column;padding:1.5rem;}
 }
 </style>
 </head>
 <body>
+
 <div id="cur"></div><div id="cur2"></div>
 
 <nav>
-  <a href="#hero" class="nlogo"><em>Harish</em> Vidyarth</a>
+  <a href="#" class="nlogo" onclick="snapTo(0);return false;"><em>Harish</em> Vidyarth</a>
   <ul class="nlinks">
-    <li><a href="#about">About</a></li>
-    <li><a href="#research">Research</a></li>
-    <li><a href="#projects">Projects</a></li>
-    <li><a href="#skills">Skills</a></li>
-    <li><a href="#karate">Martial Arts</a></li>
-    <li><a href="#music">Music</a></li>
-    <li><a href="#contact">Contact</a></li>
+    <li><a href="#" onclick="snapTo(0);return false;">Home</a></li>
+    <li><a href="#" onclick="snapTo(1);return false;">About</a></li>
+    <li><a href="#" onclick="snapTo(2);return false;">Research</a></li>
+    <li><a href="#" onclick="snapTo(3);return false;">Projects</a></li>
+    <li><a href="#" onclick="snapTo(4);return false;">Skills</a></li>
+    <li><a href="#" onclick="snapTo(5);return false;">Martial Arts</a></li>
+    <li><a href="#" onclick="snapTo(6);return false;">Music</a></li>
+    <li><a href="#" onclick="snapTo(7);return false;">Contact</a></li>
   </ul>
 </nav>
 
-<!-- HERO -->
-<section id="hero">
-  <canvas id="hero-canvas"></canvas>
+<div class="ndots" id="ndots">
+  <div class="ndot active" onclick="snapTo(0)"></div>
+  <div class="ndot" onclick="snapTo(1)"></div>
+  <div class="ndot" onclick="snapTo(2)"></div>
+  <div class="ndot" onclick="snapTo(3)"></div>
+  <div class="ndot" onclick="snapTo(4)"></div>
+  <div class="ndot" onclick="snapTo(5)"></div>
+  <div class="ndot" onclick="snapTo(6)"></div>
+  <div class="ndot" onclick="snapTo(7)"></div>
+</div>
+
+<!-- ══ SNAP CONTAINER ══ -->
+<div class="snap-container" id="sc">
+
+<!-- S0: HERO -->
+<section class="snap-section" id="hero">
+  <canvas id="hero-canvas" style="position:absolute;inset:0;z-index:0;"></canvas>
   <p class="h-eye">Cybersecurity · Graph Theory · Martial Arts · Music</p>
   <h1 class="h-name">N. Harish<br><em>Vidyarth</em></h1>
   <p class="h-tag">B.E. CSE – Cyber Security &nbsp;·&nbsp; Rajalakshmi Engineering College, Chennai</p>
   <div class="h-scroll">Scroll</div>
+  <div class="mq" style="position:absolute;bottom:0;left:0;right:0;"><div class="mq-t">
+    <span>Cybersecurity</span><span class="d">◆</span><span>Graph Theory</span><span class="d">◆</span><span>Parallel Computing</span><span class="d">◆</span><span>Scientific Reports</span><span class="d">◆</span><span>Karate 2nd Dan</span><span class="d">◆</span><span>WKF Judge B</span><span class="d">◆</span><span>Best Paper Award</span><span class="d">◆</span><span>SIH Runner-Up</span><span class="d">◆</span><span>IBM Research</span><span class="d">◆</span><span>ISRO</span><span class="d">◆</span>
+    <span>Cybersecurity</span><span class="d">◆</span><span>Graph Theory</span><span class="d">◆</span><span>Parallel Computing</span><span class="d">◆</span><span>Scientific Reports</span><span class="d">◆</span><span>Karate 2nd Dan</span><span class="d">◆</span><span>WKF Judge B</span><span class="d">◆</span><span>Best Paper Award</span><span class="d">◆</span><span>SIH Runner-Up</span><span class="d">◆</span><span>IBM Research</span><span class="d">◆</span><span>ISRO</span><span class="d">◆</span>
+  </div></div>
 </section>
 
-<div class="mq"><div class="mq-t">
-  <span>Cybersecurity</span><span class="d">◆</span><span>Graph Theory</span><span class="d">◆</span><span>Parallel Computing</span><span class="d">◆</span><span>Scientific Reports</span><span class="d">◆</span><span>Karate 2nd Dan</span><span class="d">◆</span><span>WKF Judge B</span><span class="d">◆</span><span>Best Paper Award</span><span class="d">◆</span><span>SIH Runner-Up</span><span class="d">◆</span><span>IBM Research</span><span class="d">◆</span><span>ISRO</span><span class="d">◆</span>
-  <span>Cybersecurity</span><span class="d">◆</span><span>Graph Theory</span><span class="d">◆</span><span>Parallel Computing</span><span class="d">◆</span><span>Scientific Reports</span><span class="d">◆</span><span>Karate 2nd Dan</span><span class="d">◆</span><span>WKF Judge B</span><span class="d">◆</span><span>Best Paper Award</span><span class="d">◆</span><span class="d">◆</span><span>SIH Runner-Up</span><span class="d">◆</span><span>IBM Research</span><span class="d">◆</span><span>ISRO</span><span class="d">◆</span>
-</div></div>
-
-<!-- ABOUT -->
-<section id="about">
-  <div class="ab-l rv">
-    <p class="sl">01 / About</p>
-    <h2 class="sh">Builds.<br>Breaks.<br><em>Defends.</em></h2>
-    <p>First-year B.E. CSE (Cyber Security) student at Rajalakshmi Engineering College. I research graph-theoretic approaches to parallel computing, build security tools, hold a published SCI Q1 paper in Springer Nature — and a 2nd Dan Black Belt.</p>
-    <div class="chips">
-      <span class="chip">REC Chennai</span>
-      <span class="chip">Python · C · JS</span>
-      <span class="chip">Graph Theory</span>
-      <span class="chip">Cyber Security</span>
-      <span class="chip">Tamil · English</span>
+<!-- S1: ABOUT -->
+<section class="snap-section" id="about" style="background:var(--paper);">
+  <canvas id="about-canvas"></canvas>
+  <div class="about-inner">
+    <div class="ab-l rv">
+      <p class="sl">01 / About</p>
+      <h2 class="sh">Builds.<br>Breaks.<br><em>Defends.</em></h2>
+      <p style="margin-top:1.2rem;">First-year B.E. CSE (Cyber Security) student at Rajalakshmi Engineering College. I research graph-theoretic approaches to parallel computing, build security tools, hold a published SCI Q1 paper in Springer Nature — and a 2nd Dan Black Belt.</p>
+      <div class="chips" style="margin-top:1.8rem;">
+        <span class="chip">REC Chennai</span>
+        <span class="chip">Python · C · JS</span>
+        <span class="chip">Graph Theory</span>
+        <span class="chip">Cyber Security</span>
+        <span class="chip">Tamil · English</span>
+      </div>
     </div>
-  </div>
-  <div class="ab-r rv">
-    <div class="astat"><span class="astat-n" id="cn1" data-target="9.13" data-dec="2">0</span><span class="astat-l">CGPA · First Year</span></div>
-    <div class="astat"><span class="astat-n" id="cn2" data-target="4" data-dec="0">0</span><span class="astat-l">Live Projects</span></div>
-    <div class="astat"><span class="astat-n" id="cn3" data-target="10" data-dec="0">0</span><span class="astat-l">Conferences & Events</span></div>
-    <div class="astat"><span class="astat-n" id="cn4" data-target="1" data-dec="0">0</span><span class="astat-l">SCI Q1 Publication</span></div>
-  </div>
-</section>
-
-<!-- RESEARCH -->
-<section id="research">
-  <div class="res-head rv">
-    <div><p class="sl">02 / Research</p><h2 class="sh">Graph Theory &amp;<br><em>Parallel Computing</em></h2></div>
-    <span class="res-head-r">Emerging Researcher</span>
-  </div>
-  <div class="res-grid rv">
-    <div class="rcard feat">
-      <div class="rb">SCI · Q1 · IF 3.9 · Springer Nature · 2025</div>
-      <h3>"Average distance between the processors of biswapped networks"</h3>
-      <p>Prabhu, S., Anitha, M., Vidyarth, N.H. et al. Graph-theoretic distance parameters applied to processor network topology — a contribution to parallel computing architecture analysis.</p>
-      <div class="rmeta">doi: 10.1038/s41598-025-29965-5 · Anna University Annexure I</div>
-    </div>
-    <div class="rcard">
-      <div class="rb">Best Paper Award · IC-CAMSTIA 2025</div>
-      <h3>"Wiener Index of Biswapped Networks"</h3>
-      <p>St. Joseph's Engineering College, Chennai. Graph invariants and applications in modern computing and network analysis.</p>
-      <div class="rmeta">Jul 2025 · Dept. of Mathematics</div>
-    </div>
-  </div>
-  <div class="rv">
-    <div class="conf-t">Conferences &amp; Events</div>
-    <div class="conf-scroll"><div class="conf-inner" id="conf-inner">
-      <div class="ci"><span class="cy">Feb 2026</span><span class="cn">PALS – IIT Alumni × IBM Research · Systems for LLMs</span><span class="caw">Merit</span></div>
-      <div class="ci"><span class="cy">Feb 2026</span><span class="cn">ICCE 2026 · Computational Engineering, SIMATS</span></div>
-      <div class="ci"><span class="cy">Jan 2026</span><span class="cn">ISRO Campus Visit · Satish Dhawan Space Centre</span></div>
-      <div class="ci"><span class="cy">Dec 2025</span><span class="cn">Smart India Hackathon 2025</span><span class="caw">Runner-Up</span></div>
-      <div class="ci"><span class="cy">Dec 2025</span><span class="cn">ICGTA-2025 · Amrita Vishwa Vidyapeetham, Coimbatore</span></div>
-      <div class="ci"><span class="cy">Nov 2025</span><span class="cn">ICCE Workshop · Antimagic Labelling · SIMATS</span></div>
-      <div class="ci"><span class="cy">Jun 2025</span><span class="cn">21st ADMA–ICDM 2025 · CUSAT, Kerala</span></div>
-      <div class="ci"><span class="cy">Nov 2024</span><span class="cn">Bebras Computing Challenge 2024</span><span class="caw">#4 India</span></div>
-    </div></div>
-  </div>
-</section>
-
-<!-- PROJECTS -->
-<section id="projects">
-  <div class="pj-hd">
-    <h2 class="rv">Projects</h2>
-    <span class="rv">Click → Opens GitHub</span>
-  </div>
-  <a class="prow rv" href="https://github.com/harishvidyarthcsecs" target="_blank">
-    <span class="pnum">01</span>
-    <div><div class="pnm">Proelium Academy Website</div><div class="pmt">Full-Stack · Live · proeliumacademy.in · Dec 2025</div></div>
-    <div class="ptags"><span class="ptag">Python</span><span class="ptag">Full Stack</span><span class="ptag">SEO</span></div>
-    <span class="parr">→</span>
-  </a>
-  <a class="prow rv" href="https://github.com/harishvidyarthcsecs" target="_blank">
-    <span class="pnum">02</span>
-    <div><div class="pnm">System Hardening Tool</div><div class="pmt">Security · Win/Ubuntu/CentOS · CIS Benchmark · Dec 2025</div></div>
-    <div class="ptags"><span class="ptag">Python</span><span class="ptag">CIS</span><span class="ptag">CLI/GUI</span></div>
-    <span class="parr">→</span>
-  </a>
-  <a class="prow rv" href="https://github.com/harishvidyarthcsecs" target="_blank">
-    <span class="pnum">03</span>
-    <div><div class="pnm">Secure Data Wiping Tool</div><div class="pmt">SIH 2025 · National Runner-Up · NIST SP 800-88</div></div>
-    <div class="ptags"><span class="ptag">Python</span><span class="ptag">NIST</span><span class="ptag">Cross-Platform</span></div>
-    <span class="parr">→</span>
-  </a>
-  <a class="prow rv" href="https://github.com/harishvidyarthcsecs" target="_blank">
-    <span class="pnum">04</span>
-    <div><div class="pnm">ICPC Companion App</div><div class="pmt">Autism Support · Flutter · Android Studio · Dec 2024</div></div>
-    <div class="ptags"><span class="ptag">Flutter</span><span class="ptag">Android</span><span class="ptag">A11y</span></div>
-    <span class="parr">→</span>
-  </a>
-  <p class="gh-note rv">⚠ Remind me — add individual repo URLs per project</p>
-</section>
-
-<!-- SKILLS -->
-<section id="skills">
-  <div class="sk-head">
-    <div class="rv"><p class="sl">04 / Skills</p><h2 class="sh">Tools &amp;<br><em>Craft.</em></h2></div>
-    <p class="rv">From low-level C to full-stack Python, network hardening to graph algorithms — a multidisciplinary foundation built through research and production projects.</p>
-  </div>
-  <div class="sk-cols">
-    <div class="rv">
-      <div class="sg-t">Languages</div>
-      <div class="si"><span class="sn">Python</span><div class="sdots" data-level="5"></div></div>
-      <div class="si"><span class="sn">HTML & CSS</span><div class="sdots" data-level="4"></div></div>
-      <div class="si"><span class="sn">C</span><div class="sdots" data-level="4"></div></div>
-      <div class="si"><span class="sn">JavaScript</span><div class="sdots" data-level="4"></div></div>
-    </div>
-    <div class="rv">
-      <div class="sg-t">Security & Research</div>
-      <div class="si"><span class="sn">Graph Theory</span><div class="sdots" data-level="5"></div></div>
-      <div class="si"><span class="sn">Vulnerability Analysis</span><div class="sdots" data-level="4"></div></div>
-      <div class="si"><span class="sn">Network Hardening</span><div class="sdots" data-level="4"></div></div>
-      <div class="si"><span class="sn">Parallel Computing</span><div class="sdots" data-level="4"></div></div>
-    </div>
-    <div class="rv">
-      <div class="sg-t">Frameworks & Tools</div>
-      <div class="si"><span class="sn">Git & GitHub</span><div class="sdots" data-level="4"></div></div>
-      <div class="si"><span class="sn">Django / Flask</span><div class="sdots" data-level="4"></div></div>
-      <div class="si"><span class="sn">MongoDB</span><div class="sdots" data-level="3"></div></div>
-      <div class="si"><span class="sn">Flutter</span><div class="sdots" data-level="3"></div></div>
+    <div class="ab-r rv">
+      <div class="astat"><span class="astat-n" id="cn1">9.13</span><span class="astat-l">CGPA · First Year</span></div>
+      <div class="astat"><span class="astat-n" id="cn2">4</span><span class="astat-l">Live Projects</span></div>
+      <div class="astat"><span class="astat-n" id="cn3">10</span><span class="astat-l">Conferences & Events</span></div>
+      <div class="astat"><span class="astat-n" id="cn4">1</span><span class="astat-l">SCI Q1 Publication</span></div>
     </div>
   </div>
 </section>
 
-<!-- KARATE — Three.js low-poly 3D -->
-<section id="karate">
+<!-- S2: RESEARCH -->
+<section class="snap-section" id="research">
+  <canvas id="research-canvas"></canvas>
+  <div class="research-inner">
+    <div class="res-head rv">
+      <div><p class="sl">02 / Research</p><h2 class="sh">Graph Theory &amp;<br><em>Parallel Computing</em></h2></div>
+      <span class="res-head-r">Emerging Researcher</span>
+    </div>
+    <div class="res-grid rv">
+      <div class="rcard feat">
+        <div class="rb">SCI · Q1 · IF 3.9 · Springer Nature · 2025</div>
+        <h3>"Average distance between the processors of biswapped networks"</h3>
+        <p>Prabhu, S., Anitha, M., Vidyarth, N.H. et al. Graph-theoretic distance parameters applied to processor network topology — a contribution to parallel computing architecture analysis.</p>
+        <div class="rmeta">doi: 10.1038/s41598-025-29965-5 · Anna University Annexure I</div>
+      </div>
+      <div class="rcard">
+        <div class="rb">Best Paper Award · IC-CAMSTIA 2025</div>
+        <h3>"Wiener Index of Biswapped Networks"</h3>
+        <p>St. Joseph's Engineering College, Chennai. Graph invariants and applications in modern computing and network analysis.</p>
+        <div class="rmeta">Jul 2025 · Dept. of Mathematics</div>
+      </div>
+    </div>
+    <div class="conf-section rv">
+      <div class="conf-label">Conferences &amp; Events</div>
+      <div class="conf-timeline">
+        <div class="ct-card"><div class="ct-award">Merit</div><span class="ct-year">Feb 2026</span><div class="ct-name">PALS – IIT Alumni × IBM Research · Systems for LLMs</div></div>
+        <div class="ct-card"><span class="ct-year">Feb 2026</span><div class="ct-name">ICCE 2026 · Computational Engineering, SIMATS</div></div>
+        <div class="ct-card"><span class="ct-year">Jan 2026</span><div class="ct-name">ISRO Campus Visit · Satish Dhawan Space Centre</div></div>
+        <div class="ct-card"><div class="ct-award">Runner-Up</div><span class="ct-year">Dec 2025</span><div class="ct-name">Smart India Hackathon 2025</div></div>
+        <div class="ct-card"><span class="ct-year">Dec 2025</span><div class="ct-name">ICGTA-2025 · Amrita Vishwa Vidyapeetham, Coimbatore</div></div>
+        <div class="ct-card"><span class="ct-year">Nov 2025</span><div class="ct-name">ICCE Workshop · Antimagic Labelling · SIMATS</div></div>
+        <div class="ct-card"><span class="ct-year">Jun 2025</span><div class="ct-name">21st ADMA–ICDM 2025 · CUSAT, Kerala</div></div>
+        <div class="ct-card"><div class="ct-award">#4 India</div><span class="ct-year">Nov 2024</span><div class="ct-name">Bebras Computing Challenge 2024</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S3: PROJECTS -->
+<section class="snap-section" id="projects">
+  <canvas id="projects-canvas"></canvas>
+</section>
+
+<!-- S4: SKILLS -->
+<section class="snap-section" id="skills">
+  <canvas id="skills-canvas"></canvas>
+  <div class="skills-inner">
+    <div class="sk-head">
+      <div class="rv"><p class="sl">04 / Skills</p><h2 class="sh">Tools &amp;<br><em>Craft.</em></h2></div>
+      <p class="rv">From low-level C to full-stack Python, network hardening to graph algorithms — a multidisciplinary foundation built through research and production.</p>
+    </div>
+    <div class="sk-cols">
+      <div class="rv">
+        <div class="sg-t">Languages</div>
+        <div class="si"><span class="sn">Python</span><div class="sdots" data-level="5"></div></div>
+        <div class="si"><span class="sn">HTML & CSS</span><div class="sdots" data-level="4"></div></div>
+        <div class="si"><span class="sn">C</span><div class="sdots" data-level="4"></div></div>
+        <div class="si"><span class="sn">JavaScript</span><div class="sdots" data-level="4"></div></div>
+      </div>
+      <div class="rv">
+        <div class="sg-t">Security & Research</div>
+        <div class="si"><span class="sn">Graph Theory</span><div class="sdots" data-level="5"></div></div>
+        <div class="si"><span class="sn">Vulnerability Analysis</span><div class="sdots" data-level="4"></div></div>
+        <div class="si"><span class="sn">Network Hardening</span><div class="sdots" data-level="4"></div></div>
+        <div class="si"><span class="sn">Parallel Computing</span><div class="sdots" data-level="4"></div></div>
+      </div>
+      <div class="rv">
+        <div class="sg-t">Frameworks & Tools</div>
+        <div class="si"><span class="sn">Git & GitHub</span><div class="sdots" data-level="4"></div></div>
+        <div class="si"><span class="sn">Django / Flask</span><div class="sdots" data-level="4"></div></div>
+        <div class="si"><span class="sn">MongoDB</span><div class="sdots" data-level="3"></div></div>
+        <div class="si"><span class="sn">Flutter</span><div class="sdots" data-level="3"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S5: KARATE -->
+<section class="snap-section" id="karate" style="display:grid;grid-template-columns:1fr 1fr;">
+  <canvas id="karate-bg" style="position:absolute;inset:0;z-index:0;"></canvas>
   <div class="ka-t">
     <p class="sl rv">05 / Martial Arts</p>
     <h2 class="sh rv">The <em>discipline</em><br>that sharpens<br>everything else.</h2>
@@ -333,74 +393,106 @@ footer{background:var(--ink);color:rgba(243,240,233,.25);display:flex;justify-co
   <canvas id="karate-canvas"></canvas>
 </section>
 
-<!-- MUSIC -->
-<section id="music">
+<!-- S6: MUSIC -->
+<section class="snap-section" id="music" style="min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:4rem;">
   <canvas id="music-canvas"></canvas>
-  <div class="mu-overlay rv">
-    <p class="sl">06 / Music</p>
-    <h2 class="sh">The <em>other</em><br>language.</h2>
+  <div class="mu-content rv">
+    <p class="sl">06 / Extracurricular</p>
+    <h2 class="sh">Music — the <em>other</em><br>language.</h2>
+    <p>Rhythm, harmony, improvisation — structured chaos that mirrors the logic of research and the discipline of martial arts. A creative outlet that keeps every other pursuit sharp.</p>
+    <div class="mu-bands">
+      <span class="mu-tag">Guitar</span>
+      <span class="mu-tag">Keys</span>
+      <span class="mu-tag">Composition</span>
+      <span class="mu-tag">Ear Training</span>
+    </div>
   </div>
 </section>
 
-<!-- CONTACT -->
-<section id="contact">
-  <div class="co-l rv">
-    <p class="sl">07 / Contact</p>
-    <h2 class="sh">Start a<br><em>conversation.</em></h2>
-    <p>Open to research collaborations, cybersecurity projects, and interesting ideas. I respond to everything.</p>
+<!-- S7: CONTACT -->
+<section class="snap-section" id="contact" style="background:var(--paper);">
+  <canvas id="contact-canvas"></canvas>
+  <div class="contact-inner">
+    <div class="co-l rv">
+      <p class="sl">07 / Contact</p>
+      <h2 class="sh">Start a<br><em>conversation.</em></h2>
+      <p>Open to research collaborations, cybersecurity projects, and interesting ideas. I respond to everything.</p>
+    </div>
+    <div class="co-r rv">
+      <div class="avail">Available for collaboration</div>
+      <a href="/cdn-cgi/l/email-protection#91f9f0e3f8e2f9e7f8f5e8f0e3e5f9d1f6fcf0f8fdbff2fefc" class="clink"><span class="cl-label">Email</span><span class="cl-val"><span class="__cf_email__" data-cfemail="70181102190318061914091102041830171d11191c5e131f1d">[email&#160;protected]</span></span></a>
+      <a href="https://linkedin.com/in/harishvidyarth" class="clink" target="_blank"><span class="cl-label">LinkedIn</span><span class="cl-val">linkedin.com/in/harishvidyarth</span></a>
+      <a href="https://github.com/harishvidyarthcsecs" class="clink" target="_blank"><span class="cl-label">GitHub</span><span class="cl-val">github.com/harishvidyarthcsecs</span></a>
+      <a href="tel:+916382551983" class="clink"><span class="cl-label">Phone</span><span class="cl-val">+91 63825 51983</span></a>
+      <a href="/cdn-cgi/l/email-protection#3f575e4d564c5749565b465e4d4b577f58525e5653115c5052" class="co-cta">Write to me →</a>
+    </div>
   </div>
-  <div class="co-r rv">
-    <div class="avail">Available for collaboration</div>
-    <a href="mailto:harishvidyarth@gmail.com" class="clink"><span class="cl-label">Email</span><span class="cl-val">harishvidyarth@gmail.com</span></a>
-    <a href="https://linkedin.com/in/harishvidyarth" class="clink" target="_blank"><span class="cl-label">LinkedIn</span><span class="cl-val">linkedin.com/in/harishvidyarth</span></a>
-    <a href="https://github.com/harishvidyarthcsecs" class="clink" target="_blank"><span class="cl-label">GitHub</span><span class="cl-val">github.com/harishvidyarthcsecs</span></a>
-    <a href="tel:+916382551983" class="clink"><span class="cl-label">Phone</span><span class="cl-val">+91 63825 51983</span></a>
-    <a href="mailto:harishvidyarth@gmail.com" class="co-cta">Write to me →</a>
-  </div>
+  <footer>
+    <span>© 2026 N. Harish Vidyarth</span>
+    <span>B.E. CSE – Cyber Security · Rajalakshmi Engineering College · Chennai</span>
+    <span>Three.js · GSAP · WebGL</span>
+  </footer>
 </section>
 
-<footer>
-  <span>© 2026 N. Harish Vidyarth</span>
-  <span>B.E. CSE – Cyber Security · Rajalakshmi Engineering College · Chennai</span>
-  <span>Three.js + GSAP</span>
-</footer>
+</div><!-- /snap-container -->
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ══════════════════════════
+// SNAP SCROLL + NAV DOTS
+// ══════════════════════════
+const sc = document.getElementById('sc');
+const sections = Array.from(document.querySelectorAll('.snap-section'));
+const ndots = Array.from(document.querySelectorAll('.ndot'));
+let currentSection = 0;
 
-
-// Error logging
-window.addEventListener('unhandledrejection', function(e){ console.warn('Unhandled promise:', e.reason); });
-
-// ── ROUNDRECT POLYFILL (Canvas 2D) ──────────────────
-function rrect(ctx,x,y,w,h,r){
-  if(typeof r==='undefined')r=0;
-  if(w<2*r)r=w/2;if(h<2*r)r=h/2;
-  ctx.moveTo(x+r,y);
-  ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
-  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
-  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
-  ctx.closePath();
+function snapTo(i) {
+  sections[i].scrollIntoView({behavior:'smooth'});
 }
 
-gsap.registerPlugin(ScrollTrigger);
+sc.addEventListener('scroll', () => {
+  const st = sc.scrollTop;
+  const vh = window.innerHeight;
+  const idx = Math.round(st / vh);
+  if (idx !== currentSection && idx >= 0 && idx < sections.length) {
+    currentSection = idx;
+    ndots.forEach((d,i) => d.classList.toggle('active', i === idx));
+    // trigger reveals for visible section
+    triggerReveal(sections[idx]);
+  }
+}, {passive:true});
 
-// ══════════════════════════════════════════
+function triggerReveal(sec) {
+  if(!sec) return;
+  sec.querySelectorAll('.rv').forEach((el, i) => {
+    setTimeout(() => { el.classList.add('show'); }, i * 70);
+  });
+}
+// Reveal hero + about immediately, then all others
+setTimeout(() => {
+  sections.forEach(s => triggerReveal(s)); // reveal ALL immediately as fallback
+}, 200);
+
+// ══════════════════════════
 // CURSOR
-// ══════════════════════════════════════════
-const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+// ══════════════════════════
+const cur = document.getElementById('cur'), cur2 = document.getElementById('cur2');
 let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
-(function lp(){cur.style.left=mx+'px';cur.style.top=my+'px';rx+=(mx-rx)*.1;ry+=(my-ry)*.1;cur2.style.left=rx+'px';cur2.style.top=ry+'px';requestAnimationFrame(lp);})();
+document.addEventListener('mousemove', e=>{mx=e.clientX;my=e.clientY;});
+(function lp(){
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+  rx+=(mx-rx)*.1;ry+=(my-ry)*.1;
+  cur2.style.left=rx+'px';cur2.style.top=ry+'px';
+  requestAnimationFrame(lp);
+})();
 
-// ══════════════════════════════════════════
-// HERO — Three.js particles + polyhedra
-// ══════════════════════════════════════════
-try{
+// ══════════════════════════
+// HERO — Original: particles + polyhedra shader — white/paper bg
+// ══════════════════════════
 (function(){
   const cv=document.getElementById('hero-canvas');
-  const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
+  const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:false});
   R.setPixelRatio(Math.min(devicePixelRatio,2));R.setSize(innerWidth,innerHeight);
+  R.setClearColor(0xf3f0e9,1); // paper white
   const S=new THREE.Scene(),C=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,100);
   C.position.z=5;
   const N=280,pos=new Float32Array(N*3),sz=new Float32Array(N),vl=new Float32Array(N*3);
@@ -413,13 +505,14 @@ try{
     vertexShader:`attribute float size;uniform float uT;uniform vec2 uM;varying float vA;
     void main(){vec3 p=position;float d=length(p.xy-uM*5.5);float rep=smoothstep(3.5,0.,d)*.7;
     p.xy+=normalize(p.xy-uM*5.5+.001)*rep;p.y+=sin(uT*.3+p.x*.5)*.1;p.x+=cos(uT*.25+p.z*.4)*.07;
-    vA=.15+.55*smoothstep(4.,0.,d);vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=size*(280./-mv.z);gl_Position=projectionMatrix*mv;}`,
-    fragmentShader:`varying float vA;void main(){vec2 uv=gl_PointCoord-.5;if(length(uv)>.5)discard;gl_FragColor=vec4(.06,.04,.03,(1.-length(uv)*2.)*vA);}`,
+    vA=.12+.45*smoothstep(4.,0.,d);vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=size*(280./-mv.z);gl_Position=projectionMatrix*mv;}`,
+    fragmentShader:`varying float vA;void main(){vec2 uv=gl_PointCoord-.5;if(length(uv)>.5)discard;gl_FragColor=vec4(.1,.07,.06,(1.-length(uv)*2.)*vA);}`,
     transparent:true,depthWrite:false
   });
   S.add(new THREE.Points(pg,pm));
-  function mkS(g,x,y,z,c){const m=new THREE.MeshBasicMaterial({color:c,wireframe:true,transparent:true,opacity:.1});const ms=new THREE.Mesh(g,m);ms.position.set(x,y,z);S.add(ms);return ms;}
-  const shapes=[mkS(new THREE.IcosahedronGeometry(1.3,0),3.2,.9,-2,0x1a3060),mkS(new THREE.OctahedronGeometry(.9,0),-3.7,-.4,-1.2,0xb83a24),mkS(new THREE.TetrahedronGeometry(1.,0),.8,2.1,-2.8,0x0a0908),mkS(new THREE.DodecahedronGeometry(.75,0),-1.,-1.8,-1.2,0xa8731e)];
+  // Wireframe polyhedra — dark ink on paper
+  function mkS(g,x,y,z,c){const m=new THREE.MeshBasicMaterial({color:c,wireframe:true,transparent:true,opacity:.09});const ms=new THREE.Mesh(g,m);ms.position.set(x,y,z);S.add(ms);return ms;}
+  const shapes=[mkS(new THREE.IcosahedronGeometry(1.3,0),3.2,.9,-2,0x1a3060),mkS(new THREE.OctahedronGeometry(.9,0),-3.7,-.4,-1.2,0xb83a24),mkS(new THREE.TetrahedronGeometry(1.,0),.8,2.1,-2.8,0x0a0908),mkS(new THREE.DodecahedronGeometry(.75,0),-1.,-.8,-1.2,0xa8731e)];
   const mouse=new THREE.Vector2();
   window.addEventListener('mousemove',e=>{mouse.x=(e.clientX/innerWidth)*2-1;mouse.y=-(e.clientY/innerHeight)*2+1;});
   let t=0;
@@ -433,510 +526,1192 @@ try{
   })();
   window.addEventListener('resize',()=>{C.aspect=innerWidth/innerHeight;C.updateProjectionMatrix();R.setSize(innerWidth,innerHeight);});
 })();
-}catch(e){console.warn("hero error:", e.message||e);}
 
-// ══════════════════════════════════════════
-// ABOUT — count-up + parallax font-size grow
-// ══════════════════════════════════════════
-const statData=[
-  {id:'cn1',target:9.13,dec:2,min:3,max:7.5},
-  {id:'cn2',target:4,dec:0,min:3,max:7.5},
-  {id:'cn3',target:10,dec:0,min:3,max:7.5},
-  {id:'cn4',target:1,dec:0,min:3,max:7.5},
-];
-// Count up once on enter
-statData.forEach(d=>{
-  const el=document.getElementById(d.id);
-  ScrollTrigger.create({trigger:el,start:'top 88%',once:true,onEnter:()=>{
-    const dur=1400,start=performance.now();
-    (function frame(now){
-      const p=Math.min((now-start)/dur,1);
-      const ease=1-Math.pow(1-p,4);
-      el.textContent=(d.target*ease).toFixed(d.dec);
-      if(p<1)requestAnimationFrame(frame);
-    })(performance.now());
-  }});
-});
-// Parallax font size — grows as you scroll through #about
-ScrollTrigger.create({
-  trigger:'#about',start:'top bottom',end:'bottom top',scrub:true,
-  onUpdate(self){
-    const p=self.progress; // 0 → 1
-    statData.forEach(d=>{
-      const el=document.getElementById(d.id);
-      const size=d.min+(d.max-d.min)*p;
-      el.style.fontSize=size+'rem';
-    });
-  }
-});
-
-// ══════════════════════════════════════════
-// CONF LIST — auto-scroll vertical loop
-// ══════════════════════════════════════════
-try{
+// ══════════════════════════
+// ABOUT — Flowing organic mesh background
+// ══════════════════════════
 (function(){
-  const inner=document.getElementById('conf-inner');
-  inner.innerHTML+=inner.innerHTML;
-  let off=0,paused=false;
-  inner.parentElement.addEventListener('mouseenter',()=>paused=true);
-  inner.parentElement.addEventListener('mouseleave',()=>paused=false);
-  (function tick(){if(!paused){off+=.5;const half=inner.scrollHeight/2;if(off>=half)off=0;inner.style.transform=`translateY(-${off}px)`;}requestAnimationFrame(tick);})();
-})();
-}catch(e){console.warn("confList error:", e.message||e);}
+  const cv = document.getElementById('about-canvas');
+  cv.style.position = 'absolute';
+  cv.style.inset = '0';
+  cv.style.width = '100%';
+  cv.style.height = '100%';
+  const ctx = cv.getContext('2d');
 
-// ══════════════════════════════════════════
-// SKILLS — dots fill on scroll
-// ══════════════════════════════════════════
-document.querySelectorAll('.sdots').forEach(c=>{
-  const level=parseInt(c.dataset.level)||3;
-  for(let i=0;i<5;i++){const d=document.createElement('div');d.className='sdot';c.appendChild(d);}
-  ScrollTrigger.create({trigger:c,start:'top 90%',once:true,
-    onEnter:()=>c.querySelectorAll('.sdot').forEach((d,i)=>{setTimeout(()=>{if(i<level)d.classList.add('on');},i*80+80);})
-  });
-});
+  function rsz(){cv.width=cv.offsetWidth||window.innerWidth;cv.height=cv.offsetHeight||window.innerHeight;}
+  rsz();
 
-// ══════════════════════════════════════════
-// KARATE — Low-poly 3D Three.js character
-// ══════════════════════════════════════════
-try{
-(function(){
-  const cv=document.getElementById('karate-canvas');
-  // match the right-half size
-  const W=Math.max(window.innerWidth/2,300);
-  const H=640;
-  cv.width=W; cv.height=H;
-  cv.style.width=W+'px'; cv.style.height=H+'px';
-
-  const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
-  R.setPixelRatio(Math.min(devicePixelRatio,2));
-  R.setSize(W,H);
-  R.setClearColor(0x0d0b0a,1);
-
-  const scene=new THREE.Scene();
-  const cam=new THREE.PerspectiveCamera(45,W/H,.1,100);
-  cam.position.set(0,1.2,7);
-  cam.lookAt(0,.5,0);
-
-  // Lighting — dramatic from above
-  const amb=new THREE.AmbientLight(0xffffff,.25);scene.add(amb);
-  const dir=new THREE.DirectionalLight(0xffeedd,.9);dir.position.set(2,5,3);scene.add(dir);
-  const red=new THREE.PointLight(0xb83a24,1.2,12);red.position.set(-2,1,2);scene.add(red);
-  const rim=new THREE.DirectionalLight(0x3060b8,.5);rim.position.set(-3,2,-2);scene.add(rim);
-
-  // Ground glow
-  const glowGeo=new THREE.CircleGeometry(1.8,32);
-  const glowMat=new THREE.MeshBasicMaterial({color:0xb83a24,transparent:true,opacity:.12,side:THREE.DoubleSide});
-  const glow=new THREE.Mesh(glowGeo,glowMat);glow.rotation.x=-Math.PI/2;glow.position.y=-2.2;scene.add(glow);
-
-  // Colors
-  const GI = new THREE.MeshLambertMaterial({color:0xdedad0});
-  const GI_DARK = new THREE.MeshLambertMaterial({color:0xbbb8ae});
-  const BELT = new THREE.MeshLambertMaterial({color:0x111008});
-  const SKIN = new THREE.MeshLambertMaterial({color:0xc8956c});
-  const HAIR = new THREE.MeshLambertMaterial({color:0x1a1208});
-  const RED_GUARD = new THREE.MeshLambertMaterial({color:0xcc2200});
-  const DARK_LINE = new THREE.MeshLambertMaterial({color:0x2a2820});
-  const GOLD = new THREE.MeshLambertMaterial({color:0xc8a46a,emissive:0x442200,emissiveIntensity:.3});
-
-  const fighter=new THREE.Group();scene.add(fighter);
-
-  function box(w,h,d,mat,px,py,pz,rx=0,ry=0,rz=0){
-    const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
-    m.position.set(px,py,pz);m.rotation.set(rx,ry,rz);
-    return m;
-  }
-  function sphere(r,mat,px,py,pz){
-    const m=new THREE.Mesh(new THREE.SphereGeometry(r,6,5),mat);
-    m.position.set(px,py,pz);return m;
-  }
-  function cone(r,h,mat,px,py,pz,rx=0){
-    const m=new THREE.Mesh(new THREE.ConeGeometry(r,h,4),mat);
-    m.position.set(px,py,pz);m.rotation.x=rx;return m;
-  }
-
-  // HEAD
-  const head=new THREE.Group();
-  head.add(sphere(.38,SKIN,0,0,0)); // main head
-  // jaw wider
-  const jaw=new THREE.Mesh(new THREE.BoxGeometry(.6,.25,.5),SKIN);jaw.position.set(0,-.18,0);head.add(jaw);
-  // HAIR — geometric spikes
-  const hairBase=new THREE.Mesh(new THREE.SphereGeometry(.4,6,4),HAIR);hairBase.scale.set(1,.7,1);hairBase.position.set(0,.08,.0);head.add(hairBase);
-  [[-0.1,.42,-.05,.6],[.15,.38,.1,.5],[-.18,.32,-.1,.45],[.08,.44,-.05,.55],[-.05,.4,.1,.5]].forEach(([x,y,z,s])=>{
-    const spike=new THREE.Mesh(new THREE.ConeGeometry(.1,.35,4),HAIR);spike.position.set(x,y,z);spike.rotation.z=(x>0?-.3:.3);spike.scale.set(1,s,1);head.add(spike);
-  });
-  // eyes — dark flat diamonds
-  const eyeGeo=new THREE.BoxGeometry(.1,.07,.05);
-  const eyeL=new THREE.Mesh(eyeGeo,HAIR);eyeL.position.set(-.14,.02,.36);head.add(eyeL);
-  const eyeR=new THREE.Mesh(eyeGeo,HAIR);eyeR.position.set(.14,.02,.36);head.add(eyeR);
-  // eyebrows — angled inward (angry)
-  const browGeo=new THREE.BoxGeometry(.13,.04,.05);
-  const browL=new THREE.Mesh(browGeo,HAIR);browL.position.set(-.14,.14,.35);browL.rotation.z=.35;head.add(browL);
-  const browR=new THREE.Mesh(browGeo,HAIR);browR.position.set(.14,.14,.35);browR.rotation.z=-.35;head.add(browR);
-  // nose
-  const nose=new THREE.Mesh(new THREE.ConeGeometry(.05,.1,3),SKIN);nose.position.set(0,-.05,.38);nose.rotation.x=-Math.PI/2;head.add(nose);
-  // ears
-  const earGeo=new THREE.BoxGeometry(.06,.14,.1);
-  const earL=new THREE.Mesh(earGeo,SKIN);earL.position.set(-.4,-.05,0);head.add(earL);
-  const earR=new THREE.Mesh(earGeo,SKIN);earR.position.set(.4,-.05,0);head.add(earR);
-  head.position.set(0,1.8,0);fighter.add(head);
-
-  // NECK
-  const neck=box(.18,.22,.18,SKIN,0,1.54,0);fighter.add(neck);
-
-  // TORSO
-  const torso=new THREE.Group();
-  // chest
-  torso.add(box(.9,.55,.45,GI,0,.18,0));
-  // lower torso
-  torso.add(box(.8,.45,.4,GI,0,-.2,0));
-  // lapels
-  const lapelL=new THREE.Mesh(new THREE.BoxGeometry(.08,.5,.42),GI_DARK);lapelL.position.set(-.15,.1,-.01);lapelL.rotation.z=.25;torso.add(lapelL);
-  const lapelR=new THREE.Mesh(new THREE.BoxGeometry(.08,.5,.42),GI_DARK);lapelR.position.set(.15,.1,-.01);lapelR.rotation.z=-.25;torso.add(lapelR);
-  torso.position.set(0,1.05,0);fighter.add(torso);
-
-  // BELT
-  const belt=box(.82,.1,.44,BELT,0,.83,0);fighter.add(belt);
-  const beltKnot=box(.18,.12,.1,BELT,0,.83,.18);fighter.add(beltKnot);
-  // gold stripe on belt
-  const goldStripe=box(.82,.03,.44,GOLD,0,.86,0);fighter.add(goldStripe);
-
-  // ARMS — as groups for rotation
-  // Right arm
-  const rightArm=new THREE.Group();
-  const rUpperArm=box(.18,.42,.18,GI,0,-.2,0);
-  const rForeArm=box(.16,.38,.16,GI,0,-.58,0);
-  const rGuard=new THREE.Mesh(new THREE.BoxGeometry(.22,.22,.22),RED_GUARD);rGuard.position.set(0,-.82,0);
-  // knuckle detail
-  for(let k=-1;k<=1;k++){const kd=new THREE.Mesh(new THREE.BoxGeometry(.06,.06,.08),new THREE.MeshLambertMaterial({color:0xaa1100}));kd.position.set(k*.06,-.88,.08);rightArm.add(kd);}
-  rightArm.add(rUpperArm,rForeArm,rGuard);
-  rightArm.position.set(.58,1.35,0);
-  rightArm.rotation.z=-.2;
-  fighter.add(rightArm);
-
-  // Left arm
-  const leftArm=new THREE.Group();
-  const lUpperArm=box(.18,.42,.18,GI,0,-.2,0);
-  const lForeArm=box(.16,.38,.16,GI,0,-.58,0);
-  const lGuard=new THREE.Mesh(new THREE.BoxGeometry(.22,.22,.22),RED_GUARD);lGuard.position.set(0,-.82,0);
-  leftArm.add(lUpperArm,lForeArm,lGuard);
-  leftArm.position.set(-.58,1.35,0);
-  leftArm.rotation.z=.2;
-  fighter.add(leftArm);
-
-  // HIPS
-  const hips=box(.75,.22,.38,GI,0,.6,0);fighter.add(hips);
-
-  // LEGS — groups for kick animation
-  const rightLeg=new THREE.Group();
-  const rThigh=box(.28,.5,.26,GI,0,-.25,0);
-  const rShin=box(.24,.46,.24,GI,0,-.7,0);
-  const rFoot=new THREE.Mesh(new THREE.BoxGeometry(.22,.12,.36),RED_GUARD);rFoot.position.set(0,-.98,.06);
-  rightLeg.add(rThigh,rShin,rFoot);
-  rightLeg.position.set(.25,.6,0);
-  fighter.add(rightLeg);
-
-  const leftLeg=new THREE.Group();
-  const lThigh=box(.28,.5,.26,GI,0,-.25,0);
-  const lShin=box(.24,.46,.24,GI,0,-.7,0);
-  const lFoot=new THREE.Mesh(new THREE.BoxGeometry(.22,.12,.36),RED_GUARD);lFoot.position.set(0,-.98,.06);
-  leftLeg.add(lThigh,lShin,lFoot);
-  leftLeg.position.set(-.25,.6,0);
-  fighter.add(leftLeg);
-
-  // Ground line
-  const floorGeo=new THREE.PlaneGeometry(6,.01);
-  const floorMat=new THREE.MeshBasicMaterial({color:0x2a2010,transparent:true,opacity:.5});
-  const floor=new THREE.Mesh(floorGeo,floorMat);floor.rotation.x=-Math.PI/2;floor.position.y=-2.2;scene.add(floor);
-
-  // Impact shards — hidden until kick
-  const shards=[];
-  for(let i=0;i<12;i++){
-    const sg=new THREE.Mesh(new THREE.TetrahedronGeometry(.08+Math.random()*.1,0),new THREE.MeshLambertMaterial({color:0xb83a24,transparent:true,opacity:.8}));
-    sg.position.set(.5+Math.random()*.8,(Math.random()-.3)*1.5,Math.random()*.4);sg.visible=false;
-    shards.push({mesh:sg,vx:.04+Math.random()*.06,vy:(Math.random()-.5)*.08,vz:.04+Math.random()*.04,rx:Math.random()*.1,ry:Math.random()*.1});
-    scene.add(sg);
-  }
-
-  // Base pose
-  fighter.position.y=-2.2;
-  fighter.rotation.y=.25; // slight angle
-
-  let prog=0;
-
-  function setPose(p){
-    // p: 0=ready stance, .3=wind-up, .65=kick/punch, .8=hold, 1=return
-
-    let kick,punch,lean;
-    if(p<.25){kick=0;punch=0;lean=0;}
-    else if(p<.62){const t=(p-.25)/.37;kick=t;punch=t;lean=t*.18;}
-    else if(p<.78){kick=1;punch=1;lean=.18;}
-    else{const t=(p-.78)/.22;kick=1-t;punch=1-t;lean=.18*(1-t);}
-
-    // Lean into kick (rotate torso)
-    fighter.rotation.z=-lean*.15;
-    fighter.position.x=lean*.2;
-
-    // Right arm — punch forward (rotate X = forward swing)
-    rightArm.rotation.x=-punch*Math.PI*.55;
-    rightArm.rotation.z=-.2-punch*.1;
-
-    // Left arm — guard raises
-    leftArm.rotation.x=-punch*Math.PI*.2;
-    leftArm.rotation.z=.2+punch*.15;
-
-    // Right leg — KICK
-    const kickAngle=kick*Math.PI*.55;
-    rightLeg.rotation.x=-kickAngle;
-    // Knee snap: lower part of leg extends
-    rShin.rotation.x=kick*Math.PI*.35;
-
-    // Left leg — bends slightly for balance
-    leftLeg.rotation.x=kick*.1;
-
-    // Head looks at kick target
-    head.rotation.x=lean*.1;
-    head.rotation.z=-lean*.1;
-
-    // Shards appear at kick peak
-    const kickPeak=kick>.55?((kick-.55)/.45):0;
-    shards.forEach((s,i)=>{
-      if(kickPeak>.1){
-        s.mesh.visible=true;
-        s.mesh.position.x=.5+Math.cos(i*.5)*kickPeak*.5;
-        s.mesh.position.y=Math.sin(i*.8)*kickPeak*.4;
-        s.mesh.position.z=kickPeak*.3;
-        s.mesh.rotation.x+=s.rx;s.mesh.rotation.y+=s.ry;
-        s.mesh.material.opacity=kickPeak*.8;
-      }else{shards.forEach(s=>s.mesh.visible=false);}
-    });
-
-    // Red light pulses on kick
-    red.intensity=.8+kick*1.8;
-    red.position.x=-1.5+kick*2;
-  }
-
-  let t=0;
-  (function anim(){
-    requestAnimationFrame(anim);t+=.008;
-    // Idle breathing bob
-    if(prog<.05){fighter.position.y=-2.2+Math.sin(t*1.5)*.02;}
-    // Slow auto-rotate when idle
-    if(prog<.05){fighter.rotation.y=.25+Math.sin(t*.4)*.12;}
-    R.render(scene,cam);
-  })();
-
-  ScrollTrigger.create({
-    trigger:'#karate',start:'top 70%',end:'bottom 30%',scrub:2,
-    onUpdate:self=>{prog=self.progress;setPose(prog);}
-  });
-
-  window.addEventListener('resize',()=>{
-    const nW=Math.max(window.innerWidth/2,300);
-    cam.aspect=nW/H;cam.updateProjectionMatrix();R.setSize(nW,H);
-  });
-})();
-}catch(e){console.warn("karate error:", e.message||e);}
-
-// ══════════════════════════════════════════
-// MUSIC — Full band scatter (2D Canvas)
-// ══════════════════════════════════════════
-try{
-(function(){
-  const sec=document.getElementById('music');
-  const cv=document.getElementById('music-canvas');
-  function rsz(){cv.width=sec.offsetWidth||window.innerWidth;cv.height=620;}rsz();
-  const ctx=cv.getContext('2d');
-  let W=cv.width,H=cv.height,scatter=0;
-
-  // Each instrument: start at stage position, scatter to target
-  const band=[
-    {type:'guitar',  sx:()=>W*.22, sy:()=>H*.68, tx:()=>W*.04, ty:()=>-160, tr:-1.2},
-    {type:'drums',   sx:()=>W*.5,  sy:()=>H*.72, tx:()=>W*.48, ty:()=>-240, tr: .15},
-    {type:'keyboard',sx:()=>W*.78, sy:()=>H*.65, tx:()=>W*.96, ty:()=>-130, tr: 1.1},
-    {type:'mic',     sx:()=>W*.42, sy:()=>H*.55, tx:()=>W*.38, ty:()=>-90,  tr:-.4},
-    {type:'headphones',sx:()=>W*.6,sy:()=>H*.5,  tx:()=>W*.72, ty:()=>-80,  tr: .6},
-  ];
-
-  // Notes — rain from sky after scatter
-  const noteSyms=['♩','♪','♫','♬','𝄞','♭','♯'];
-  const notes=Array.from({length:22},(_,i)=>({
-    sym:noteSyms[i%noteSyms.length],
-    x:40+Math.random()*(W-80),y:-20-Math.random()*H*.6,
-    vy:.7+Math.random()*1.3,size:13+Math.random()*18,
-    col:['rgba(26,48,96,.65)','rgba(168,115,30,.6)','rgba(184,58,36,.55)'][i%3]
+  const pts = Array.from({length:6}, (_,i) => ({
+    x: Math.random()*cv.width, y: Math.random()*cv.height,
+    vx: (Math.random()-.5)*0.5, vy: (Math.random()-.5)*0.5,
+    r: 180 + Math.random()*200,
+    col: ['rgba(168,115,30,', 'rgba(26,48,96,', 'rgba(184,58,36,'][i%3]
   }));
 
-  // ─ Draw functions ─
-  function guitar(ctx,x,y,r,a){
-    if(a<=0)return;ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.globalAlpha=a;
-    const s=.85;
-    ctx.fillStyle='#8b4513';ctx.beginPath();ctx.ellipse(0,18*s,23*s,28*s,0,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.ellipse(0,-14*s,18*s,21*s,0,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#7a3c10';ctx.fillRect(-11*s,-12*s,22*s,26*s);
-    ctx.fillStyle='#2a0e04';ctx.beginPath();ctx.arc(0,6*s,8*s,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#6b3310';ctx.fillRect(-4*s,-95*s,8*s,82*s);
-    ctx.fillStyle='#5a2a08';ctx.beginPath();rrect(ctx,-7*s,-112*s,14*s,22*s,3);ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=.9;
-    for(let i=0;i<6;i++){ctx.beginPath();ctx.moveTo((-5+i*2)*s,-90*s);ctx.lineTo((-2+i*1.1)*s,36*s);ctx.stroke();}
-    ctx.fillStyle='rgba(255,255,255,.14)';ctx.beginPath();ctx.ellipse(-7*s,10*s,5*s,13*s,-.3,0,Math.PI*2);ctx.fill();
-    ctx.restore();
-  }
-
-  function drums(ctx,x,y,r,a){
-    if(a<=0)return;ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.globalAlpha=a;
-    const s=.9;
-    // bass drum
-    ctx.fillStyle='#cc2200';ctx.beginPath();ctx.ellipse(0,12*s,34*s,20*s,0,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle='rgba(0,0,0,.15)';ctx.beginPath();ctx.ellipse(0,12*s,27*s,13*s,0,0,Math.PI*2);ctx.fill();
-    // bass drum logo
-    ctx.fillStyle='rgba(255,255,255,.15)';ctx.font=`bold ${9*s}px sans-serif`;ctx.textAlign='center';ctx.fillText('HV',0,16*s);
-    // snare
-    ctx.fillStyle='#ddd';ctx.beginPath();ctx.ellipse(-26*s,-10*s,15*s,9*s,0,0,Math.PI*2);ctx.fill();ctx.stroke();
-    // snare rim
-    ctx.strokeStyle='#aaa';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(-26*s,-10*s,15*s,9*s,0,0,Math.PI*2);ctx.stroke();
-    // rack tom
-    ctx.fillStyle='#cc2200';ctx.beginPath();ctx.ellipse(26*s,-12*s,13*s,8*s,0,0,Math.PI*2);ctx.fill();ctx.stroke();
-    // floor tom
-    ctx.fillStyle='#cc2200';ctx.beginPath();ctx.ellipse(34*s,18*s,13*s,8*s,0,0,Math.PI*2);ctx.fill();ctx.stroke();
-    // hi-hat (2 cymbals)
-    ctx.fillStyle='#d4a520';
-    ctx.beginPath();ctx.ellipse(-34*s,-28*s,16*s,5*s,0,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.ellipse(-34*s,-35*s,16*s,5*s,0,0,Math.PI*2);ctx.fill();
-    // ride cymbal
-    ctx.beginPath();ctx.ellipse(28*s,-32*s,18*s,5*s,-.1,0,Math.PI*2);ctx.fill();
-    // stands
-    ctx.strokeStyle='rgba(130,130,130,.55)';ctx.lineWidth=2.5*s;
-    ctx.beginPath();ctx.moveTo(0,32*s);ctx.lineTo(-18*s,50*s);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(0,32*s);ctx.lineTo(18*s,50*s);ctx.stroke();
-    ctx.restore();
-  }
-
-  function keyboard(ctx,x,y,r,a){
-    if(a<=0)return;ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.globalAlpha=a;
-    const s=.85;
-    // body
-    ctx.fillStyle='#111';ctx.beginPath();rrect(ctx,-55*s,-15*s,110*s,34*s,5);ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=1;ctx.stroke();
-    // brand stripe
-    ctx.fillStyle='rgba(184,58,36,.6)';ctx.fillRect(-55*s,-2*s,110*s,2*s);
-    // white keys
-    const wk=18,wkW=110*s/wk;
-    for(let i=0;i<wk;i++){ctx.fillStyle='#f0ede4';ctx.strokeStyle='#bbb';ctx.lineWidth=.5;ctx.beginPath();rrect(ctx,-55*s+i*wkW+1,-13*s,wkW-2,26*s,2);ctx.fill();ctx.stroke();}
-    // black keys
-    const bp=[1,1,0,1,1,1,0,1,1,0,1,1,1,0,1,1,0,1];
-    bp.slice(0,wk).forEach((has,i)=>{if(has){ctx.fillStyle='#111';ctx.beginPath();rrect(ctx,-55*s+i*wkW+wkW*.55,-13*s,wkW*.58,17*s,1);ctx.fill();}});
-    // legs
-    ctx.strokeStyle='rgba(150,150,150,.45)';ctx.lineWidth=3.5*s;
-    ctx.beginPath();ctx.moveTo(-35*s,18*s);ctx.lineTo(-35*s,46*s);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(35*s,18*s);ctx.lineTo(35*s,46*s);ctx.stroke();
-    ctx.restore();
-  }
-
-  function mic(ctx,x,y,r,a){
-    if(a<=0)return;ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.globalAlpha=a;
-    const s=.75;
-    ctx.strokeStyle='rgba(140,140,140,.65)';ctx.lineWidth=3*s;
-    ctx.beginPath();ctx.moveTo(0,65*s);ctx.lineTo(0,-22*s);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(-20*s,65*s);ctx.lineTo(20*s,65*s);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(0,14*s);ctx.lineTo(32*s,-8*s);ctx.stroke();
-    ctx.fillStyle='#444';ctx.beginPath();ctx.ellipse(32*s,-18*s,10*s,15*s,0,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle='rgba(200,200,200,.25)';ctx.lineWidth=.8;
-    for(let i=-4;i<=4;i++){ctx.beginPath();ctx.moveTo(32*s-9*s,(-18+i*3.8)*s);ctx.lineTo(32*s+9*s,(-18+i*3.8)*s);ctx.stroke();}
-    ctx.restore();
-  }
-
-  function headphones(ctx,x,y,r,a){
-    if(a<=0)return;ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.globalAlpha=a;
-    const s=.8;
-    // headband arc
-    ctx.strokeStyle='#222';ctx.lineWidth=8*s;ctx.lineCap='round';
-    ctx.beginPath();ctx.arc(0,-5*s,28*s,Math.PI*.15,Math.PI*.85,true);ctx.stroke();
-    ctx.strokeStyle='#c8a46a';ctx.lineWidth=3*s;
-    ctx.beginPath();ctx.arc(0,-5*s,28*s,Math.PI*.15,Math.PI*.85,true);ctx.stroke();
-    // ear cups
-    [[1,1],[-1,-1]].forEach(([sx])=>{
-      ctx.fillStyle='#1a1a2e';ctx.beginPath();ctx.ellipse(sx*28*s,18*s,12*s,14*s,0,0,Math.PI*2);ctx.fill();
-      ctx.strokeStyle='#c8a46a';ctx.lineWidth=2;ctx.stroke();
-      ctx.fillStyle='rgba(200,164,106,.2)';ctx.beginPath();ctx.arc(sx*28*s,18*s,6*s,0,Math.PI*2);ctx.fill();
+  let t = 0;
+  function draw(){
+    t += .003;
+    ctx.clearRect(0,0,cv.width,cv.height);
+    pts.forEach(p => {
+      p.x += p.vx + Math.sin(t + p.r*.01)*0.3;
+      p.y += p.vy + Math.cos(t*.8 + p.r*.01)*0.2;
+      if(p.x<-p.r)p.x=cv.width+p.r;
+      if(p.x>cv.width+p.r)p.x=-p.r;
+      if(p.y<-p.r)p.y=cv.height+p.r;
+      if(p.y>cv.height+p.r)p.y=-p.r;
+      const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
+      g.addColorStop(0, p.col+'0.07)');
+      g.addColorStop(1, p.col+'0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fill();
     });
-    ctx.restore();
+    requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize', rsz);
+})();
+
+// Research: CSS dot-grid used instead of canvas
+
+// ══════════════════════════
+// RESEARCH — Animated deep-space gradient mesh background
+// ══════════════════════════
+(function(){
+  const cv=document.getElementById('research-canvas');
+  const ctx=cv.getContext('2d');
+  function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight;}rsz();
+
+  // Floating orbs — navy/gold/teal
+  const orbs=[
+    {x:.15,y:.3,r:320,col:'26,48,96',speed:.0004,phase:0},
+    {x:.7,y:.2,r:280,col:'168,115,30',speed:.0006,phase:1.2},
+    {x:.5,y:.75,r:350,col:'15,40,80',speed:.0003,phase:2.4},
+    {x:.85,y:.6,r:260,col:'30,80,120',speed:.0005,phase:0.8},
+    {x:.2,y:.8,r:240,col:'100,70,20',speed:.0007,phase:3.1},
+  ];
+  let t=0;
+  function draw(){
+    t++;
+    ctx.fillStyle='#080f1e';
+    ctx.fillRect(0,0,cv.width,cv.height);
+
+    // Draw blurred gradient orbs
+    orbs.forEach(o=>{
+      const ox=cv.width*(o.x+Math.sin(t*o.speed+o.phase)*.12);
+      const oy=cv.height*(o.y+Math.cos(t*o.speed*1.3+o.phase)*.1);
+      const g=ctx.createRadialGradient(ox,oy,0,ox,oy,o.r);
+      g.addColorStop(0,`rgba(${o.col},0.22)`);
+      g.addColorStop(.5,`rgba(${o.col},0.08)`);
+      g.addColorStop(1,`rgba(${o.col},0)`);
+      ctx.fillStyle=g;
+      ctx.beginPath();ctx.arc(ox,oy,o.r,0,Math.PI*2);ctx.fill();
+    });
+
+    // Star field
+    if(t<3){
+      for(let i=0;i<200;i++){
+        const sx=Math.random()*cv.width,sy=Math.random()*cv.height;
+        const sa=Math.random()*.5;
+        ctx.fillStyle=`rgba(255,255,255,${sa})`;
+        ctx.fillRect(sx,sy,Math.random()<.1?2:1,Math.random()<.1?2:1);
+      }
+    }
+
+    // Subtle grid lines (like a star chart)
+    ctx.strokeStyle='rgba(168,115,30,0.04)';
+    ctx.lineWidth=1;
+    const gs=60;
+    for(let x=0;x<cv.width;x+=gs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,cv.height);ctx.stroke();}
+    for(let y=0;y<cv.height;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cv.width,y);ctx.stroke();}
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize',rsz);
+})();
+
+// ══════════════════════════
+// PROJECTS — Full VS Code Editor with file tree + project data
+// ══════════════════════════
+(function(){
+  const cv=document.getElementById('projects-canvas');
+  cv.style.position='absolute';cv.style.inset='0';
+  const ctx=cv.getContext('2d');
+  function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight;}rsz();
+
+  const MONO='"Space Mono",monospace';
+  const SANS='"DM Sans",sans-serif';
+  const C={
+    bg:'#1e1e1e',sidebar:'#252526',actbar:'#333333',
+    tab:'#1e1e1e',tabInactive:'#2d2d2d',tabBorder:'#569cd6',
+    gutter:'#5a5a5a',lineHi:'rgba(86,156,214,0.07)',
+    kw:'#569cd6',fn:'#dcdcaa',str:'#ce9178',num:'#b5cea8',
+    cmt:'#6a9955',cls:'#4ec9b0',prop:'#9cdcfe',punc:'#d4d4d4',
+    plain:'#d4d4d4',sel:'rgba(38,79,120,0.5)',
+    folderIcon:'#e8c07d',fileIcon:'#7ab0d4',
+    pyIcon:'#3572A5',ftIcon:'#54C5F8',
+  };
+
+  // ─ Layout constants ─
+  const ACT=48, SIDE=220, TABH=35, STATUSH=22, LH=20;
+
+  // ─ Projects data ─
+  const projects=[
+    {
+      name:'proelium_academy',icon:'🌐',lang:'py',badge:'LIVE',badgeCol:'#4caf50',
+      desc:'Full-Stack Web · proeliumacademy.in · Dec 2025',
+      lines:[
+        {c:C.cmt,s:'# Proelium Academy — Full Stack Web App'},
+        {c:C.cmt,s:'# Live at proeliumacademy.in · Dec 2025'},
+        {c:'',s:''},
+        {t:'mixed',s:[{c:C.kw,s:'from'},{c:C.plain,s:' django.db '},{c:C.kw,s:'import'},{c:C.plain,s:' models'}]},
+        {t:'mixed',s:[{c:C.kw,s:'from'},{c:C.plain,s:' django.contrib.auth '},{c:C.kw,s:'import'},{c:C.plain,s:' User'}]},
+        {c:'',s:''},
+        {t:'mixed',s:[{c:C.kw,s:'class'},{c:C.plain,s:' '},{c:C.cls,s:'Course'},{c:C.punc,s:'(models.Model):'}]},
+        {t:'mixed',s:[{c:C.plain,s:'    title = models.CharField('},{c:C.prop,s:'max_length'},{c:C.plain,s:'='},{c:C.num,s:'200'},{c:C.plain,s:')'}]},
+        {t:'mixed',s:[{c:C.plain,s:'    slug  = models.'},{c:C.fn,s:'SlugField'},{c:C.plain,s:'('},{c:C.prop,s:'unique'},{c:C.plain,s:'='},{c:C.kw,s:'True'},{c:C.plain,s:')'}]},
+        {t:'mixed',s:[{c:C.plain,s:'    price = models.'},{c:C.fn,s:'DecimalField'},{c:C.plain,s:'()'}]},
+        {t:'mixed',s:[{c:C.plain,s:'    seo_score = models.'},{c:C.fn,s:'IntegerField'},{c:C.plain,s:'('},{c:C.prop,s:'default'},{c:C.plain,s:'='},{c:C.num,s:'0'},{c:C.plain,s:')'}]},
+        {c:'',s:''},
+        {t:'mixed',s:[{c:C.plain,s:'    '},{c:C.kw,s:'def'},{c:C.plain,s:' '},{c:C.fn,s:'__str__'},{c:C.punc,s:'(self): '},{c:C.kw,s:'return'},{c:C.plain,s:' self.title'}]},
+      ]
+    },
+    {
+      name:'system_hardener',icon:'🔒',lang:'py',badge:'CIS',badgeCol:'#569cd6',
+      desc:'Security Tool · Win/Ubuntu/CentOS · Dec 2025',
+      lines:[
+        {c:C.cmt,s:'# System Hardening Tool — CIS Benchmark'},
+        {c:C.cmt,s:'# Cross-platform: Windows · Ubuntu · CentOS'},
+        {c:'',s:''},
+        {t:'mixed',s:[{c:C.kw,s:'import'},{c:C.plain,s:' subprocess, platform, json, logging'}]},
+        {c:'',s:''},
+        {t:'mixed',s:[{c:C.kw,s:'class'},{c:C.plain,s:' '},{c:C.cls,s:'CISHardener'},{c:C.punc,s:':'}]},
+        {t:'mixed',s:[{c:C.plain,s:'    PROFILES = '},{c:C.punc,s:'{'},{c:C.str,s:'"L1"'},{c:C.plain,s:': '},{c:C.num,s:'97'},{c:C.plain,s:', '},{c:C.str,s:'"L2"'},{c:C.plain,s:': '},{c:C.num,s:'184'},{c:C.punc,s:'}'}]},
+        {c:'',s:''},
+        {t:'mixed',s:[{c:C.plain,s:'    '},{c:C.kw,s:'def'},{c:C.plain,s:' '},{c:C.fn,s:'run_rule'},{c:C.punc,s:'(self, rule_id):'}]},
+        {t:'mixed',s:[{c:C.plain,s:'        result = subprocess.'},{c:C.fn,s:'run'},{c:C.plain,s:'('}]},
+        {t:'mixed',s:[{c:C.plain,s:'            self.rules[rule_id]["cmd"],'}]},
+        {t:'mixed',s:[{c:C.plain,s:'            '},{c:C.prop,s:'capture_output'},{c:C.plain,s:'='},{c:C.kw,s:'True'},{c:C.plain,s:', '},{c:C.prop,s:'shell'},{c:C.plain,s:'='},{c:C.kw,s:'True'}]},
+        {t:'mixed',s:[{c:C.plain,s:'        )'}]},
+        {t:'mixed',s:[{c:C.kw,s:'        return'},{c:C.plain,s:' result.'},{c:C.prop,s:'returncode'},{c:C.plain,s:' == '},{c:C.num,s:'0'}]},
+      ]
+    },
+    {
+      name:'secure_wiper',icon:'🗑️',lang:'py',badge:'SIH🥈',badgeCol:'#c8a46a',
+      desc:'NIST SP 800-88 · SIH 2025 Runner-Up',
+      lines:[
+        {c:C.cmt,s:'# Secure Data Wiping Tool — SIH 2025 Runner-Up'},
+        {c:C.cmt,s:'# Implements NIST SP 800-88 Rev.1'},
+        {c:'',s:''},
+        {t:'mixed',s:[{c:C.kw,s:'from'},{c:C.plain,s:' pathlib '},{c:C.kw,s:'import'},{c:C.plain,s:' Path'}]},
+        {t:'mixed',s:[{c:C.kw,s:'import'},{c:C.plain,s:' os, secrets, struct'}]},
+        {c:'',s:''},
+        {t:'mixed',s:[{c:C.kw,s:'def'},{c:C.plain,s:' '},{c:C.fn,s:'dod_wipe'},{c:C.punc,s:'(path: Path, passes: int = '},{c:C.num,s:'3'},{c:C.punc,s:') -> bool:'}]},
+        {t:'mixed',s:[{c:C.plain,s:'    '},{c:C.str,s:'"""DoD 5220.22-M + NIST Purge standard"""'}]},
+        {t:'mixed',s:[{c:C.plain,s:'    size = path.'},{c:C.fn,s:'stat'},{c:C.plain,s:'().'},{c:C.prop,s:'st_size'}]},
+        {t:'mixed',s:[{c:C.kw,s:'    with'},{c:C.plain,s:' path.'},{c:C.fn,s:'open'},{c:C.plain,s:'('},{c:C.str,s:'"r+b"'},{c:C.plain,s:') '},{c:C.kw,s:'as'},{c:C.plain,s:' f:'}]},
+        {t:'mixed',s:[{c:C.kw,s:'        for'},{c:C.plain,s:' _ '},{c:C.kw,s:'in'},{c:C.plain,s:' '},{c:C.fn,s:'range'},{c:C.plain,s:'(passes):'}]},
+        {t:'mixed',s:[{c:C.plain,s:'            f.'},{c:C.fn,s:'seek'},{c:C.plain,s:'('},{c:C.num,s:'0'},{c:C.plain,s:')'}]},
+        {t:'mixed',s:[{c:C.plain,s:'            f.'},{c:C.fn,s:'write'},{c:C.plain,s:'(secrets.'},{c:C.fn,s:'token_bytes'},{c:C.plain,s:'(size))'}]},
+      ]
+    },
+    {
+      name:'icpc_companion',icon:'📱',lang:'dart',badge:'A11y',badgeCol:'#9cdcfe',
+      desc:'Autism Support App · Flutter · Dec 2024',
+      lines:[
+        {c:C.cmt,s:'// ICPC Companion App — Autism Support'},
+        {c:C.cmt,s:'// Flutter · Android Studio · Dec 2024'},
+        {c:'',s:''},
+        {t:'mixed',s:[{c:C.kw,s:'import'},{c:C.plain,s:' '},{c:C.str,s:"'package:flutter/material.dart'"}]},
+        {c:'',s:''},
+        {t:'mixed',s:[{c:C.kw,s:'class'},{c:C.plain,s:' '},{c:C.cls,s:'CompanionApp'},{c:C.plain,s:' '},{c:C.kw,s:'extends'},{c:C.plain,s:' '},{c:C.cls,s:'StatefulWidget'},{c:C.punc,s:' {}'}]},
+        {t:'mixed',s:[{c:C.plain,s:'  '},{c:C.kw,s:'final'},{c:C.plain,s:' '},{c:C.cls,s:'AccessibilityProfile'},{c:C.plain,s:' profile;'}]},
+        {c:'',s:''},
+        {t:'mixed',s:[{c:C.plain,s:'  @override'}]},
+        {t:'mixed',s:[{c:C.plain,s:'  '},{c:C.cls,s:'Widget'},{c:C.plain,s:' '},{c:C.fn,s:'build'},{c:C.punc,s:'('},{c:C.cls,s:'BuildContext'},{c:C.plain,s:' ctx) '},{c:C.punc,s:'{'},{c:C.punc,s:'}'}]},
+        {t:'mixed',s:[{c:C.kw,s:'    return'},{c:C.plain,s:' '},{c:C.cls,s:'MaterialApp'},{c:C.punc,s:'('}]},
+        {t:'mixed',s:[{c:C.plain,s:'      '},{c:C.prop,s:'theme'},{c:C.plain,s:': '},{c:C.cls,s:'ThemeData'},{c:C.punc,s:'('}]},
+        {t:'mixed',s:[{c:C.plain,s:'        '},{c:C.prop,s:'fontFamily'},{c:C.plain,s:': '},{c:C.str,s:"'OpenDyslexic'"},{c:C.punc,s:','}]},
+      ]
+    },
+  ];
+
+  let activeProject=0;
+  let typedLine=0, typedChar=0;
+  let typeTimer=0;
+
+  function getLines(){ return projects[activeProject].lines; }
+
+  // ─ Drawing helpers ─
+  function drawMixedLine(x,y,parts){
+    let cx=x;
+    ctx.font=`12px ${MONO}`;
+    ctx.textBaseline='top';
+    if(!parts)return;
+    parts.forEach(p=>{
+      if(!p||!p.s)return;
+      ctx.fillStyle=p.c||C.plain;
+      ctx.fillText(p.s,cx,y);
+      cx+=ctx.measureText(p.s).width;
+    });
+    return cx;
+  }
+
+  function drawLine(x,y,line,partial){
+    ctx.font=`12px ${MONO}`;ctx.textBaseline='top';
+    if(!line){return;}
+    if(line.t==='mixed'){
+      if(partial!==undefined){
+        // reconstruct raw and clip
+        const raw=line.s.map(p=>p.s||'').join('');
+        const txt=raw.slice(0,partial);
+        ctx.fillStyle=C.cmt; ctx.fillText(txt,x,y);
+      } else {
+        drawMixedLine(x,y,line.s);
+      }
+    } else {
+      const txt=partial!==undefined?(line.s||'').slice(0,partial):(line.s||'');
+      ctx.fillStyle=line.c||C.plain;
+      ctx.fillText(txt,x,y);
+    }
+  }
+
+  // Typewriter advance
+  function advanceType(){
+    const lines=getLines();
+    if(typedLine>=lines.length){typedLine=0;typedChar=0;return;}
+    const line=lines[typedLine];
+    const raw=line.t==='mixed'?line.s.map(p=>p.s||'').join(''):(line.s||'');
+    typedChar+=2;
+    if(typedChar>=raw.length){
+      typedLine++;
+      typedChar=0;
+    }
+  }
+
+  // ─ DRAW ACTIVITY BAR ─
+  function drawActivityBar(){
+    ctx.fillStyle=C.actbar;ctx.fillRect(0,0,ACT,cv.height);
+    // Icons
+    const icons=['≡','⎔','⑂','🔍','⚙'];
+    icons.forEach((ic,i)=>{
+      ctx.font=`14px sans-serif`;ctx.textBaseline='middle';ctx.textAlign='center';
+      ctx.fillStyle=i===0?'#fff':'rgba(255,255,255,.4)';
+      ctx.fillText(ic,ACT/2,70+i*48);
+    });
+    ctx.textAlign='left';
+  }
+
+  // ─ DRAW SIDEBAR (file explorer) ─
+  function drawSidebar(){
+    ctx.fillStyle=C.sidebar;ctx.fillRect(ACT,0,SIDE,cv.height);
+    // Explorer title
+    ctx.font=`bold 10px ${SANS}`;ctx.textBaseline='top';
+    ctx.fillStyle='rgba(255,255,255,.5)';
+    ctx.fillText('EXPLORER',ACT+12,12);
+    // Root folder
+    ctx.font=`12px ${SANS}`;ctx.fillStyle='rgba(255,255,255,.8)';
+    ctx.fillText('▾  harishvidyarth',ACT+8,32);
+    // Project folders
+    projects.forEach((p,i)=>{
+      const y=58+i*72;
+      const active=i===activeProject;
+      if(active){
+        ctx.fillStyle='rgba(86,156,214,0.15)';
+        ctx.fillRect(ACT,y-4,SIDE,64);
+      }
+      // Folder icon + name
+      ctx.font=`12px ${SANS}`;
+      ctx.fillStyle=active?'#d4d4d4':'rgba(212,212,212,.6)';
+      ctx.fillText(`▾  ${p.icon} ${p.name}`,ACT+14,y);
+      // Files inside
+      ctx.font=`11px ${SANS}`;
+      ctx.fillStyle='rgba(212,212,212,.4)';
+      ctx.fillText(`    📄 main.${p.lang}`,ACT+14,y+18);
+      ctx.fillText(`    📄 README.md`,ACT+14,y+34);
+      // Badge
+      ctx.font=`bold 9px ${SANS}`;
+      ctx.fillStyle=p.badgeCol;
+      ctx.fillText(p.badge,ACT+14,y+50);
+      ctx.font=`9px ${SANS}`;
+      ctx.fillStyle='rgba(212,212,212,.35)';
+      ctx.fillText(` · ${p.desc}`,ACT+14+ctx.measureText(p.badge).width+4,y+50);
+    });
+  }
+
+  // ─ DRAW TAB BAR ─
+  function drawTabBar(){
+    const ex=ACT+SIDE;
+    ctx.fillStyle='#252526';ctx.fillRect(ex,0,cv.width-ex,TABH);
+    projects.forEach((p,i)=>{
+      const tw=160,tx=ex+i*tw;
+      const active=i===activeProject;
+      ctx.fillStyle=active?C.tab:C.tabInactive;
+      ctx.fillRect(tx,0,tw,TABH);
+      if(active){ctx.fillStyle=C.tabBorder;ctx.fillRect(tx,0,tw,2);}
+      ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=1;
+      ctx.strokeRect(tx,0,tw,TABH);
+      ctx.font=`11px ${SANS}`;ctx.textBaseline='middle';ctx.textAlign='left';
+      ctx.fillStyle=active?'#d4d4d4':'rgba(212,212,212,.4)';
+      const icon=p.lang==='py'?'🐍':p.lang==='dart'?'🎯':'📄';
+      ctx.fillText(`${icon} main.${p.lang}`,tx+8,TABH/2+1);
+    });
+    ctx.textAlign='left';
+  }
+
+  // ─ DRAW CODE PANE ─
+  function drawCode(){
+    const ex=ACT+SIDE;
+    const codeX=ex+52; // gutter
+    const codeW=cv.width-codeX-10;
+
+    ctx.fillStyle=C.bg;ctx.fillRect(ex,TABH,cv.width-ex,cv.height-TABH-STATUSH);
+
+    const lines=getLines();
+    const startY=TABH+16;
+    const visLines=Math.floor((cv.height-TABH-STATUSH-16)/LH);
+    const scrollOff=Math.max(0,typedLine-visLines+4);
+
+    lines.slice(scrollOff).forEach((line,i)=>{
+      const lineNum=scrollOff+i;
+      const y=startY+i*LH;
+      if(y>cv.height-STATUSH-8)return;
+
+      // Active line highlight
+      if(lineNum===typedLine){
+        ctx.fillStyle=C.lineHi;
+        ctx.fillRect(ex,y-2,cv.width-ex,LH+2);
+      }
+
+      // Line number
+      ctx.font=`11px ${MONO}`;ctx.textBaseline='top';
+      ctx.fillStyle=lineNum===typedLine?'#d4d4d4':C.gutter;
+      ctx.textAlign='right';
+      ctx.fillText(String(lineNum+1),ex+44,y+1);
+      ctx.textAlign='left';
+
+      // Code
+      if(lineNum<typedLine){
+        drawLine(codeX,y,line); // fully rendered
+      } else if(lineNum===typedLine){
+        drawLine(codeX,y,line,typedChar); // partial
+        // Blinking cursor
+        const raw=line.t==='mixed'?line.s.map(p=>p.s||'').join(''):(line.s||'');
+        ctx.font=`12px ${MONO}`;
+        const cx2=codeX+ctx.measureText(raw.slice(0,typedChar)).width;
+        if(Math.floor(Date.now()/500)%2===0){
+          ctx.fillStyle='rgba(214,214,214,.9)';
+          ctx.fillRect(cx2,y+1,2,LH-2);
+        }
+      }
+    });
+    ctx.textAlign='left';
+  }
+
+  // ─ DRAW STATUS BAR ─
+  function drawStatus(){
+    const ex=ACT+SIDE;
+    const p=projects[activeProject];
+    ctx.fillStyle='#007acc';ctx.fillRect(0,cv.height-STATUSH,cv.width,STATUSH);
+    ctx.font=`10px ${SANS}`;ctx.textBaseline='middle';ctx.fillStyle='rgba(255,255,255,.9)';
+    ctx.fillText(` ⎇ main   ${p.lang==='py'?'Python 3.11':p.lang==='dart'?'Dart 3.2':'Flutter'}   Ln ${typedLine+1}   ${p.badge} — ${p.name}`,4,cv.height-STATUSH/2);
+  }
+
+  // ─ CLICK TO SWITCH PROJECT ─
+  cv.addEventListener('click',e=>{
+    const x=e.offsetX,y=e.offsetY;
+    if(x>ACT&&x<ACT+SIDE){
+      projects.forEach((_,i)=>{
+        const fy=58+i*72;
+        if(y>=fy-4&&y<fy+64){activeProject=i;typedLine=0;typedChar=0;}
+      });
+    }
+    // Tab click
+    const ex=ACT+SIDE;
+    if(y<TABH&&x>ex){
+      const idx=Math.floor((x-ex)/160);
+      if(idx>=0&&idx<projects.length){activeProject=idx;typedLine=0;typedChar=0;}
+    }
+  });
+  cv.style.cursor='default';
+
+  let frame=0;
+  function draw(){
+    frame++;
+    if(frame%3===0)advanceType();
+    ctx.clearRect(0,0,cv.width,cv.height);
+    drawActivityBar();
+    drawSidebar();
+    drawTabBar();
+    drawCode();
+    drawStatus();
+    requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize',()=>{rsz();});
+})();
+
+// ══════════════════════════
+// SKILLS — Hex grid with pulse
+// ══════════════════════════
+(function(){
+  const cv=document.getElementById('skills-canvas');
+  cv.style.position='absolute';cv.style.inset='0';
+  const ctx=cv.getContext('2d');
+  function rsz(){cv.width=cv.offsetWidth||window.innerWidth;cv.height=cv.offsetHeight||window.innerHeight;}rsz();
+
+  const HEX=38,cols2=Math.ceil(cv.width/(HEX*1.73))+1,rows=Math.ceil(cv.height/(HEX*1.5))+1;
+  let t=0;
+
+  function hexPath(cx,cy,r){
+    ctx.beginPath();
+    for(let i=0;i<6;i++){
+      const a=Math.PI/3*i-Math.PI/6;
+      const x=cx+r*Math.cos(a),y=cy+r*Math.sin(a);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.closePath();
   }
 
   function draw(){
-    ctx.clearRect(0,0,W,H);
+    t+=.008;
+    ctx.clearRect(0,0,cv.width,cv.height);
+    const W=HEX*Math.sqrt(3),H2=HEX*1.5;
+    for(let row=0;row<rows;row++){
+      for(let col=0;col<cols2;col++){
+        const offset=row%2===0?0:W/2;
+        const cx=col*W+offset;
+        const cy=row*H2;
+        const wave=Math.sin(t+(cx*.02)+(cy*.015));
+        const alpha=0.04+0.06*((wave+1)/2);
+        ctx.strokeStyle=`rgba(26,48,96,${alpha})`;
+        ctx.lineWidth=.8;
+        hexPath(cx,cy,HEX*.92);
+        ctx.stroke();
+        // Pulse highlight
+        if(wave>.82){
+          ctx.fillStyle=`rgba(168,115,30,${(wave-.82)*.15})`;
+          ctx.fill();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize',()=>{rsz();});
 
-    // Stage floor
-    const fy=H*.8;
-    const fg=ctx.createLinearGradient(0,fy,0,H);
-    fg.addColorStop(0,'rgba(190,182,165,.5)');fg.addColorStop(1,'rgba(160,154,140,.25)');
-    ctx.fillStyle=fg;ctx.fillRect(0,fy,W,H-fy);
-    ctx.strokeStyle='rgba(10,9,8,.1)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,fy);ctx.lineTo(W,fy);ctx.stroke();
+  // Skill dots
+  document.querySelectorAll('.sdots').forEach(c=>{
+    const level=parseInt(c.dataset.level)||3;
+    for(let i=0;i<5;i++){const d=document.createElement('div');d.className='sdot';c.appendChild(d);}
+  });
 
-    // Spotlights behind instruments (visible when not scattered)
-    const sAlpha=(1-scatter)*.14;
-    if(sAlpha>.01){
-      [[W*.22,W*.3],[W*.5,W*.45],[W*.78,W*.65]].forEach(([bx,tx])=>{
-        const g=ctx.createLinearGradient(tx,0,bx,fy);
-        g.addColorStop(0,`rgba(255,240,160,${sAlpha})`);g.addColorStop(1,`rgba(255,240,160,0)`);
-        ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(tx,0);ctx.lineTo(bx-70,fy);ctx.lineTo(bx+70,fy);ctx.closePath();ctx.fill();
+  // Animate dots when skills section is visible
+  const skillsSection=document.getElementById('skills');
+  let dotsAnimated=false;
+  const obs=new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting&&!dotsAnimated){
+      dotsAnimated=true;
+      document.querySelectorAll('.sdots').forEach(c=>{
+        const level=parseInt(c.dataset.level)||3;
+        c.querySelectorAll('.sdot').forEach((d,i)=>{
+          setTimeout(()=>{if(i<level)d.classList.add('on');},i*100+200);
+        });
       });
     }
+  },{threshold:.3,root:sc});
+  obs.observe(skillsSection);
+})();
 
-    // Easing
-    const e=1-Math.pow(1-Math.min(scatter,1),3);
+// ══════════════════════════
+// KARATE BG — Energy plasma
+// ══════════════════════════
+(function(){
+  const cv=document.getElementById('karate-bg');
+  const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:false});
+  R.setPixelRatio(Math.min(devicePixelRatio,2));
+  R.setSize(innerWidth,innerHeight);
+  R.setClearColor(0x08060a,1);
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(70,innerWidth/innerHeight,.1,100);
+  cam.position.z=5;
 
-    band.forEach(b=>{
-      const sx=b.sx(),sy=b.sy(),tx=b.tx(),ty=b.ty();
-      const ix=sx+(tx-sx)*e;
-      const iy=sy+(ty-sy)*e;
-      const ir=b.tr*e;
-      const ia=Math.max(0,1-e*1.15);
-
-      if(b.type==='guitar')guitar(ctx,ix,iy,ir,ia);
-      else if(b.type==='drums')drums(ctx,ix,iy,ir,ia);
-      else if(b.type==='keyboard')keyboard(ctx,ix,iy,ir,ia);
-      else if(b.type==='mic')mic(ctx,ix,iy,ir,ia);
-      else if(b.type==='headphones')headphones(ctx,ix,iy,ir,ia);
+  // Energy rings
+  const rings=[];
+  for(let i=0;i<8;i++){
+    const geo=new THREE.TorusGeometry(1.5+i*0.8,.01+Math.random()*.02,4,80);
+    const mat=new THREE.MeshBasicMaterial({
+      color:[0x6600aa,0x440088,0x220055,0x880033][i%4],
+      transparent:true,opacity:.12+Math.random()*.1
     });
+    const mesh=new THREE.Mesh(geo,mat);
+    mesh.rotation.x=Math.random()*Math.PI;
+    mesh.rotation.y=Math.random()*Math.PI;
+    mesh.userData={rx:(.3+Math.random()*.4)*(Math.random()>.5?1:-1),ry:(.2+Math.random()*.3)*(Math.random()>.5?1:-1)};
+    scene.add(mesh);
+    rings.push(mesh);
+  }
 
-    // Musical notes rain
-    if(scatter>.18){
-      const na=(scatter-.18)/.82;
-      notes.forEach(n=>{
-        n.y+=n.vy;if(n.y>H+30)n.y=-30;
-        ctx.font=`${n.size}px serif`;ctx.fillStyle=n.col;
-        ctx.globalAlpha=na*.85;ctx.textAlign='center';
-        ctx.fillText(n.sym,n.x,n.y);
-      });
-      ctx.globalAlpha=1;
+  // Central orb glow
+  const orbGeo=new THREE.SphereGeometry(1,16,12);
+  const orbMat=new THREE.MeshBasicMaterial({color:0x220033,transparent:true,opacity:.4});
+  scene.add(new THREE.Mesh(orbGeo,orbMat));
+
+  let t=0;
+  (function anim(){
+    requestAnimationFrame(anim);t+=.007;
+    rings.forEach(r=>{r.rotation.x+=r.userData.rx*.012;r.rotation.y+=r.userData.ry*.01;r.scale.setScalar(1+Math.sin(t+r.userData.rx)*0.06);});
+    R.render(scene,cam);
+  })();
+  window.addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();R.setSize(innerWidth,innerHeight);});
+})();
+
+// ══════════════════════════
+// KARATE — Elite low-poly stylized warrior with scroll kick
+// ══════════════════════════
+try{(function(){
+  const cv = document.getElementById('karate-canvas');
+  const W = Math.max(window.innerWidth/2, 300);
+  const H = window.innerHeight;
+  cv.style.width = '100%';
+  cv.width = W; cv.height = H;
+
+  const R = new THREE.WebGLRenderer({canvas:cv, antialias:true, alpha:true});
+  R.setPixelRatio(Math.min(devicePixelRatio, 2));
+  R.setSize(W, H);
+  R.setClearColor(0x000000, 0);
+  R.shadowMap.enabled = true;
+  R.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  const scene = new THREE.Scene();
+  const cam = new THREE.PerspectiveCamera(38, W/H, .1, 100);
+  cam.position.set(0, 1.8, 9.5);
+  cam.lookAt(0, 1.4, 0);
+
+  // ─ Lighting ─
+  scene.add(new THREE.AmbientLight(0x1a0a30, 0.6));
+  const key = new THREE.SpotLight(0xffffff, 2.2, 40, Math.PI/6, 0.3);
+  key.position.set(2, 9, 4); key.castShadow = true;
+  key.shadow.mapSize.set(1024,1024); key.shadow.bias = -0.001;
+  scene.add(key); scene.add(key.target);
+  const fill = new THREE.DirectionalLight(0x4060ff, 0.5);
+  fill.position.set(-5, 3, -2); scene.add(fill);
+  const rim = new THREE.DirectionalLight(0xc8a46a, 0.8);
+  rim.position.set(-3, 5, -5); scene.add(rim);
+  const redPt = new THREE.PointLight(0xcc2200, 0, 12);
+  redPt.position.set(2.5, 1, 2); scene.add(redPt);
+  const purPt = new THREE.PointLight(0x6600cc, 1.0, 15);
+  purPt.position.set(0, -1.5, 2); scene.add(purPt);
+
+  // ─ Ground ─
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(14,14), new THREE.ShadowMaterial({opacity:.35}));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-2.2; floor.receiveShadow=true; scene.add(floor);
+  [[1.0,0xc8a46a,.5],[1.8,0xc8a46a,.25],[2.8,0xcc2200,.15]].forEach(([r,c,o])=>{
+    const m=new THREE.Mesh(new THREE.TorusGeometry(r,.015,4,6),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:o}));
+    m.rotation.x=-Math.PI/2; m.position.y=-2.19; scene.add(m);
+  });
+  const fgDisc=new THREE.Mesh(new THREE.CircleGeometry(2,32),new THREE.MeshBasicMaterial({color:0x8800cc,transparent:true,opacity:.12,side:THREE.DoubleSide}));
+  fgDisc.rotation.x=-Math.PI/2; fgDisc.position.y=-2.18; scene.add(fgDisc);
+
+  // ─ Materials (MeshLambertMaterial — safe for r128) ─
+  const M=(c,e=0,ei=0)=>new THREE.MeshLambertMaterial({color:c,emissive:e,emissiveIntensity:ei});
+  const GI=M(0xe8e5da), GI_S=M(0xcac7bc), GI_D=M(0xb0ada0);
+  const BELT=M(0x080606), BELTG=M(0xd4aa50,0xaa6600,.4);
+  const SKIN=M(0xb87848,0x200800,.04), SKIN_D=M(0x9a6035);
+  const HAIR=M(0x100c06), HAIR_H=M(0x1e160a,0x100600,.04);
+  const GUARD=M(0xcc1100,0x440000,.4), GUARD_H=M(0xff3300,0xff1100,.7);
+  const SOCK=M(0xf5f2ea);
+  const EYE_W=M(0xf0ede4), EYE_D=M(0x080604), EYE_I=M(0x4a2010);
+
+  const fighter=new THREE.Group(); scene.add(fighter); fighter.position.y=-2.2;
+  function C2(m){m.castShadow=true;m.receiveShadow=true;return m;}
+  function BX(w,h,d,m){return C2(new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m));}
+  function SP(r,m,sx=1,sy=1,sz=1){const ms=C2(new THREE.Mesh(new THREE.SphereGeometry(r,10,8),m));ms.scale.set(sx,sy,sz);return ms;}
+  function CY(rt,rb,h,m,s=8){return C2(new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,s),m));}
+  function CO(r,h,m,s=4){return C2(new THREE.Mesh(new THREE.ConeGeometry(r,h,s),m));}
+
+  // ═══ HEAD — canvas-textured sphere for clean face ═══
+  const headGrp=new THREE.Group();
+
+  // Build face texture on a 2D canvas
+  const faceCv=document.createElement('canvas');
+  faceCv.width=512; faceCv.height=512;
+  const fc=faceCv.getContext('2d');
+
+  // Skin base
+  const skinGrad=fc.createRadialGradient(256,220,20,256,256,260);
+  skinGrad.addColorStop(0,'#c98a5a');skinGrad.addColorStop(1,'#a06030');
+  fc.fillStyle=skinGrad; fc.beginPath(); fc.arc(256,256,252,0,Math.PI*2); fc.fill();
+
+  // Hair — dark cap top 45%
+  fc.fillStyle='#150e06';
+  fc.beginPath(); fc.ellipse(256,120,210,170,0,Math.PI,Math.PI*2); fc.fill();
+  // Hair sides
+  fc.beginPath(); fc.ellipse(60,230,55,120,-.3,0,Math.PI*2); fc.fill();
+  fc.beginPath(); fc.ellipse(452,230,55,120,.3,0,Math.PI*2); fc.fill();
+  // Hair fringe sweep lines
+  fc.strokeStyle='#1e1608'; fc.lineWidth=8;
+  [[-30,160,-10,210],[0,155,15,205],[30,158,10,212],[-55,170,-35,225],[55,165,38,222]].forEach(([x1,y1,x2,y2])=>{
+    fc.beginPath(); fc.moveTo(256+x1,y1); fc.quadraticCurveTo(256+x2*1.2,y1+20,256+x2,y2); fc.stroke();
+  });
+
+  // Eye sockets — subtle shadow
+  fc.fillStyle='rgba(80,40,10,0.25)';
+  fc.beginPath(); fc.ellipse(185,230,38,22,0,0,Math.PI*2); fc.fill();
+  fc.beginPath(); fc.ellipse(327,230,38,22,0,0,Math.PI*2); fc.fill();
+
+  // Eye whites
+  fc.fillStyle='#f2ede4';
+  fc.beginPath(); fc.ellipse(185,228,28,16,0,0,Math.PI*2); fc.fill();
+  fc.beginPath(); fc.ellipse(327,228,28,16,0,0,Math.PI*2); fc.fill();
+
+  // Iris — warm dark brown
+  fc.fillStyle='#3a1a08';
+  fc.beginPath(); fc.arc(185,230,14,0,Math.PI*2); fc.fill();
+  fc.beginPath(); fc.arc(327,230,14,0,Math.PI*2); fc.fill();
+  // Iris highlight (lighter ring)
+  fc.fillStyle='#5a2e10';
+  fc.beginPath(); fc.arc(185,230,10,0,Math.PI*2); fc.fill();
+  fc.beginPath(); fc.arc(327,230,10,0,Math.PI*2); fc.fill();
+  // Pupil
+  fc.fillStyle='#050302';
+  fc.beginPath(); fc.arc(185,231,6,0,Math.PI*2); fc.fill();
+  fc.beginPath(); fc.arc(327,231,6,0,Math.PI*2); fc.fill();
+  // Eye shine
+  fc.fillStyle='rgba(255,255,255,0.65)';
+  fc.beginPath(); fc.arc(179,225,3.5,0,Math.PI*2); fc.fill();
+  fc.beginPath(); fc.arc(321,225,3.5,0,Math.PI*2); fc.fill();
+
+  // Upper eyelids
+  fc.fillStyle='#9a6030';
+  fc.beginPath(); fc.ellipse(185,216,30,10,0,Math.PI,Math.PI*2); fc.fill();
+  fc.beginPath(); fc.ellipse(327,216,30,10,0,Math.PI,Math.PI*2); fc.fill();
+
+  // Eyebrows — thick, strong, inward angle for intensity
+  fc.fillStyle='#150e06'; fc.lineWidth=0;
+  function drawBrow(cx,cy,angle){
+    fc.save(); fc.translate(cx,cy); fc.rotate(angle);
+    fc.beginPath(); fc.ellipse(0,0,36,9,0,0,Math.PI*2); fc.fill();
+    fc.restore();
+  }
+  drawBrow(185,193,.22); // left brow — angled down toward center
+  drawBrow(327,193,-.22);// right brow
+
+  // Nose — clean bridge + nostrils
+  fc.strokeStyle='rgba(80,40,10,0.4)'; fc.lineWidth=5; fc.lineCap='round';
+  fc.beginPath(); fc.moveTo(256,240); fc.lineTo(256,295); fc.stroke();
+  // Nose tip blob
+  fc.fillStyle='#b87040';
+  fc.beginPath(); fc.ellipse(256,300,24,14,0,0,Math.PI*2); fc.fill();
+  // Nostrils
+  fc.fillStyle='rgba(60,25,5,0.55)';
+  fc.beginPath(); fc.ellipse(238,302,9,6,-.3,0,Math.PI*2); fc.fill();
+  fc.beginPath(); fc.ellipse(274,302,9,6,.3,0,Math.PI*2); fc.fill();
+
+  // Mouth — neutral determined expression
+  fc.strokeStyle='rgba(80,35,10,0.7)'; fc.lineWidth=6; fc.lineCap='round';
+  fc.beginPath(); fc.moveTo(218,340); fc.quadraticCurveTo(256,348,294,340); fc.stroke();
+  // Lower lip
+  fc.fillStyle='rgba(160,80,40,0.3)';
+  fc.beginPath(); fc.ellipse(256,348,28,9,0,0,Math.PI); fc.fill();
+
+  // Ear tone patches on sides
+  fc.fillStyle='#b87040';
+  fc.beginPath(); fc.ellipse(15,256,15,30,0,0,Math.PI*2); fc.fill();
+  fc.beginPath(); fc.ellipse(497,256,15,30,0,0,Math.PI*2); fc.fill();
+
+  // Subtle jaw shadow at bottom
+  const jawGrad=fc.createLinearGradient(0,380,0,512);
+  jawGrad.addColorStop(0,'rgba(80,35,0,0)'); jawGrad.addColorStop(1,'rgba(60,25,0,0.35)');
+  fc.fillStyle=jawGrad; fc.fillRect(0,380,512,132);
+
+  const faceTex=new THREE.CanvasTexture(faceCv);
+
+  // Apply texture to a proper sphere head
+  const headMat=new THREE.MeshLambertMaterial({map:faceTex});
+  const headMesh=new THREE.Mesh(new THREE.SphereGeometry(.44,32,24),headMat);
+  headMesh.castShadow=true;
+  headGrp.add(headMesh);
+
+  // Back of head — plain skin/hair
+  const backMat=new THREE.MeshLambertMaterial({color:0x150e06});
+  const backMesh=new THREE.Mesh(new THREE.SphereGeometry(.445,16,12),backMat);
+  backMesh.rotation.y=Math.PI; // face forward = front hemisphere only trick
+  // We only need the back half — clip with a box
+  // Actually just use the full sphere at slightly larger scale and it sits behind
+  backMesh.scale.set(.998,.998,.998);
+  headGrp.add(backMesh);
+
+  // Ears — simple cylinders on the sides
+  const earMat=M(0xb87848,0x100800,.02);
+  const earGeo=new THREE.CylinderGeometry(.09,.1,.12,8);
+  const earL2=new THREE.Mesh(earGeo,earMat); earL2.rotation.z=Math.PI/2; earL2.position.set(-.48,0,0); headGrp.add(earL2);
+  const earR2=earL2.clone(); earR2.position.set(.48,0,0); headGrp.add(earR2);
+  // Ear inner detail
+  const earInMat=M(0x9a6035);
+  const earIn=new THREE.Mesh(new THREE.CylinderGeometry(.05,.06,.06,6),earInMat);
+  earIn.rotation.z=Math.PI/2; earIn.position.set(-.5,0,.01); headGrp.add(earIn);
+  const earInR=earIn.clone(); earInR.position.set(.5,0,.01); headGrp.add(earInR);
+
+  headGrp.position.set(0,3.58,0);
+  // Rotate so face texture points forward (+Z)
+  headMesh.rotation.y=0;
+  fighter.add(headGrp);
+
+  // ═══ NECK ═══
+  const neck=CY(.16,.18,.32,SKIN); neck.position.set(0,3.14,0); fighter.add(neck);
+
+  // ═══ TORSO ═══
+  const torsoGrp=new THREE.Group();
+  const chest=BX(.96,.62,.5,GI); chest.position.set(0,.2,0); torsoGrp.add(chest);
+  const shL=SP(.22,GI,.9,1,.9); shL.position.set(-.54,.22,0); torsoGrp.add(shL);
+  const shR=SP(.22,GI,.9,1,.9); shR.position.set(.54,.22,0); torsoGrp.add(shR);
+  const lowerT=BX(.82,.48,.44,GI); lowerT.position.set(0,-.21,0); torsoGrp.add(lowerT);
+  const sterno=BX(.05,.6,.03,GI_D); sterno.position.set(0,.06,.26); torsoGrp.add(sterno);
+  const lapL2=BX(.08,.55,.46,GI_S); lapL2.position.set(-.17,.06,-.01); lapL2.rotation.z=.3; torsoGrp.add(lapL2);
+  const lapR2=BX(.08,.55,.46,GI_S); lapR2.position.set(.17,.06,-.01); lapR2.rotation.z=-.3; torsoGrp.add(lapR2);
+  const colV=BX(.25,.5,.07,GI_D); colV.position.set(0,.09,.24); torsoGrp.add(colV);
+  for(let i=0;i<3;i++){const w=BX(.4,.02,.46,GI_S);w.position.set(0,-.05+i*.1,0);torsoGrp.add(w);}
+  torsoGrp.position.set(0,2.48,0); fighter.add(torsoGrp);
+
+  // ═══ BELT ═══
+  const beltGrp=new THREE.Group();
+  beltGrp.add(BX(.84,.12,.48,BELT));
+  const bs=BX(.84,.03,.48,BELTG); bs.position.y=.075; beltGrp.add(bs);
+  const bs2=BX(.84,.02,.48,BELTG); bs2.position.y=-.06; beltGrp.add(bs2);
+  const knot=BX(.2,.18,.14,BELT); knot.position.set(0,0,.26); beltGrp.add(knot);
+  const knotT=BX(.18,.05,.14,BELTG); knotT.position.set(0,.1,.26); beltGrp.add(knotT);
+  [[-.06],[.06]].forEach(([x])=>{
+    const tl=BX(.07,.4,.06,BELT); tl.position.set(x,-.26,.26); beltGrp.add(tl);
+    const ts=BX(.07,.4,.02,BELTG); ts.position.set(x,-.26,.29); beltGrp.add(ts);
+  });
+  beltGrp.position.set(0,2.02,0); fighter.add(beltGrp);
+
+  // ═══ ARMS ═══
+  let rightArm,leftArm;
+  function buildArm(side){
+    const grp=new THREE.Group();
+    const shPad=SP(.22,GI_S,.95,.9,.9); grp.add(shPad);
+    const upper=CY(.155,.13,.48,GI); upper.position.y=-.24; grp.add(upper);
+    const elbow=SP(.16,GI_S); elbow.position.y=-.5; grp.add(elbow);
+    const fore=CY(.13,.10,.44,GI); fore.position.y=-.74; grp.add(fore);
+    const wrist=SP(.12,GI_D); wrist.position.y=-.98; grp.add(wrist);
+    const gb=BX(.26,.26,.26,GUARD); gb.position.y=-1.18; grp.add(gb);
+    const ge=BX(.28,.04,.28,GUARD_H); ge.position.y=-1.06; grp.add(ge);
+    const gf=BX(.26,.26,.04,GUARD_H); gf.position.set(0,-1.18,.15); grp.add(gf);
+    for(let k=0;k<4;k++){const kn=BX(.055,.055,.12,GUARD_H);kn.position.set(-.085+k*.057,-1.16,.16);grp.add(kn);}
+    grp.position.set(side*.6,2.72,0); grp.rotation.z=side*-.22;
+    return grp;
+  }
+  rightArm=buildArm(1); fighter.add(rightArm);
+  leftArm=buildArm(-1); fighter.add(leftArm);
+
+  // ═══ HIPS ═══
+  const hipsGrp=new THREE.Group();
+  hipsGrp.add(BX(.78,.28,.44,GI));
+  const hwL=BX(.3,.28,.06,GI_S); hwL.position.set(-.2,0,.22); hwL.rotation.y=-.2; hipsGrp.add(hwL);
+  const hwR=BX(.3,.28,.06,GI_S); hwR.position.set(.2,0,.22); hwR.rotation.y=.2; hipsGrp.add(hwR);
+  hipsGrp.position.set(0,1.8,0); fighter.add(hipsGrp);
+
+  // ═══ LEGS ═══
+  let rLeg,lLeg,rShin,lShin;
+  function buildLeg(side){
+    const grp=new THREE.Group();
+    const thigh=CY(.2,.16,.58,GI); thigh.position.y=-.29; grp.add(thigh);
+    const knee=SP(.22,GI_S,1,.85,1); knee.position.y=-.6; grp.add(knee);
+    const sGrp=new THREE.Group();
+    const shin=CY(.17,.11,.52,GI); shin.position.y=-.26; sGrp.add(shin);
+    const ankle=SP(.14,GI_S); ankle.position.y=-.54; sGrp.add(ankle);
+    const sock=CY(.13,.1,.1,SOCK); sock.position.y=-.62; sGrp.add(sock);
+    const foot=BX(.22,.14,.38,GUARD); foot.position.set(0,-.7,.1); sGrp.add(foot);
+    const ftop=BX(.22,.05,.38,GUARD_H); ftop.position.set(0,-.64,.1); sGrp.add(ftop);
+    const toe=BX(.2,.08,.12,GUARD_H); toe.position.set(0,-.7,.3); sGrp.add(toe);
+    sGrp.position.y=-.64;
+    grp.add(sGrp);
+    grp.userData.shinGrp=sGrp;
+    grp.position.set(side*.28,1.8,0);
+    return {grp,sGrp};
+  }
+  const rLO=buildLeg(1); fighter.add(rLO.grp); rLeg=rLO.grp; rShin=rLO.sGrp;
+  const lLO=buildLeg(-1); fighter.add(lLO.grp); lLeg=lLO.grp; lShin=lLO.sGrp;
+
+  fighter.rotation.y=.35;
+
+  // Impact effects
+  const shards=[];
+  for(let i=0;i<16;i++){
+    const s=new THREE.Mesh(new THREE.TetrahedronGeometry(.07+Math.random()*.08,0),
+      new THREE.MeshLambertMaterial({color:0xdd2200,emissive:0xcc1100,emissiveIntensity:.8,transparent:true,opacity:0}));
+    scene.add(s); s.visible=false;
+    shards.push({mesh:s,ox:2.2+Math.random()*.7,oy:(Math.random()-.3)*.8,oz:Math.random()*.3,phase:Math.random()*Math.PI*2});
+  }
+  const speedLines=[];
+  for(let i=0;i<16;i++){
+    const angle=(Math.random()-.5)*.8;
+    const len=.8+Math.random()*1.1;
+    const geo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),new THREE.Vector3(len,0,0)]);
+    const line=new THREE.Line(geo,new THREE.LineBasicMaterial({color:0xff4400,transparent:true,opacity:0}));
+    line.position.set(1.2,(Math.random()-.3)*.8,0); line.rotation.z=angle;
+    scene.add(line); speedLines.push(line);
+  }
+  const auraRings=[];
+  for(let i=0;i<4;i++){
+    const rm=new THREE.Mesh(new THREE.TorusGeometry(.4+i*.35,.01,4,32),
+      new THREE.MeshBasicMaterial({color:0xcc3300,transparent:true,opacity:0}));
+    rm.rotation.y=Math.PI/2; rm.position.set(2,1.2,0); scene.add(rm);
+    auraRings.push({mesh:rm});
+  }
+
+  let kickPhase=0;
+  function setPose(p){
+    const ease=t2=>t2<.5?4*t2*t2*t2:(t2-1)*(2*t2-2)*(2*t2-2)+1;
+    let kick;
+    if(p<.35){kick=ease(p/.35);}
+    else if(p<.65){kick=1;}
+    else if(p<.82){kick=ease(1-(p-.65)/.17);}
+    else{kick=0;}
+
+    fighter.rotation.z=-kick*.12; fighter.position.x=kick*.25;
+    torsoGrp.rotation.x=kick*.07; torsoGrp.rotation.z=-kick*.05;
+    rightArm.rotation.x=-kick*1.9; rightArm.rotation.z=-.22-kick*.1; rightArm.position.z=kick*.5;
+    leftArm.rotation.x=-kick*Math.PI*.3; leftArm.rotation.z=.22+kick*.25; leftArm.position.z=kick*.1;
+    rLeg.rotation.x=-kick*Math.PI*.6;
+    rShin.rotation.x=kick*Math.PI*.5;
+    lLeg.rotation.x=kick*.12; lLeg.rotation.z=-.04-kick*.04;
+    headGrp.rotation.x=kick*.06; headGrp.rotation.z=-kick*.05;
+
+    const peak=p>.38&&p<.78?Math.sin(Math.PI*(p-.38)/.4):0;
+    const now2=Date.now()*.001;
+    shards.forEach(s=>{
+      if(peak>.12){
+        s.mesh.visible=true; s.mesh.material.opacity=peak*.8;
+        s.mesh.position.set(s.ox+Math.cos(s.phase+now2*3)*peak*.3,s.oy+Math.sin(s.phase+now2*2)*peak*.25,s.oz);
+        s.mesh.rotation.x+=.05; s.mesh.rotation.y+=.04;
+      } else { s.mesh.visible=false; }
+    });
+    speedLines.forEach(l=>{ l.material.opacity=peak*.5; });
+    auraRings.forEach((ar,i)=>{ ar.mesh.material.opacity=peak*(.5+i*.1); ar.mesh.scale.setScalar(1+peak*(1+i*.3)); });
+    redPt.intensity=peak*5;
+    purPt.intensity=0.8+peak*1.5;
+    fgDisc.material.opacity=.1+kick*.28;
+    fgDisc.scale.setScalar(1+kick*.35);
+  }
+
+  let tLoop=0;
+  (function anim(){
+    requestAnimationFrame(anim); tLoop+=.006;
+    if(kickPhase<.04){
+      fighter.position.y=-2.2+Math.sin(tLoop*1.3)*.025;
+      fighter.rotation.y=.35+Math.sin(tLoop*.28)*.1;
+      headGrp.rotation.y=Math.sin(tLoop*.4)*.04;
+    }
+    setPose(kickPhase);
+    R.render(scene,cam);
+  })();
+
+  const karateSec=document.getElementById('karate');
+  sc.addEventListener('scroll',()=>{
+    const top=karateSec.offsetTop;
+    const rel=sc.scrollTop-top+window.innerHeight*.25;
+    kickPhase=Math.max(0,Math.min(1,rel/(karateSec.offsetHeight*.65)));
+  },{passive:true});
+
+  window.addEventListener('resize',()=>{
+    const nW=Math.max(window.innerWidth/2,300);
+    cam.aspect=nW/H; cam.updateProjectionMatrix(); R.setSize(nW,H);
+  });
+})();}catch(e){console.warn('Karate 3D error:',e);}
+
+// ══════════════════════════
+// MUSIC — Immersive Audio Visualizer + Instruments
+// ══════════════════════════
+(function(){
+  const cv=document.getElementById('music-canvas');
+  const ctx=cv.getContext('2d');
+  function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight;}rsz();
+
+  let t=0;
+  let W=cv.width,H=cv.height;
+  let mouseX=W/2,mouseY=H/2;
+  cv.addEventListener('mousemove',e=>{mouseX=e.clientX;mouseY=e.clientY;});
+
+  // Simulated frequency data (fake audio analysis)
+  const BINS=128;
+  const freq=new Float32Array(BINS);
+  const targetFreq=new Float32Array(BINS);
+
+  function updateFreq(){
+    for(let i=0;i<BINS;i++){
+      const base=Math.pow(1-i/BINS,1.5);
+      targetFreq[i]=base*.7 + Math.sin(t*3.4+i*.15)*.15 + Math.sin(t*1.7+i*.3)*.1 + Math.random()*.08;
+      freq[i]+=(targetFreq[i]-freq[i])*.12;
     }
   }
 
-  (function tick(){requestAnimationFrame(tick);draw();})();
+  // Floating note particles
+  const noteSyms=['♩','♪','♫','♬','𝄞','♭','♯','𝄢'];
+  const notes=Array.from({length:30},()=>({
+    sym:noteSyms[Math.floor(Math.random()*noteSyms.length)],
+    x:Math.random()*W, y:H+Math.random()*H,
+    vx:(Math.random()-.5)*.4, vy:-(0.6+Math.random()*1.2),
+    size:14+Math.random()*24,
+    alpha:0.3+Math.random()*.5,
+    col:[`rgba(160,103,208,`, `rgba(90,60,160,`, `rgba(200,140,255,`, `rgba(60,40,120,`][Math.floor(Math.random()*4)],
+    rot:0, rotV:(Math.random()-.5)*.02
+  }));
 
-  ScrollTrigger.create({
-    trigger:'#music',start:'top 80%',end:'bottom 15%',scrub:1.6,
-    onUpdate:s=>{scatter=s.progress;}
-  });
+  // Orbiting circles (EQ style)
+  const orbs=Array.from({length:6},(_,i)=>({
+    angle:i/6*Math.PI*2,
+    radius:80+i*35,
+    speed:.25+i*.1,
+    size:6+i*3,
+    col:[`rgba(160,103,208,`, `rgba(200,100,255,`, `rgba(80,40,180,`][i%3]
+  }));
 
+  // Central waveform ring
+  function drawWaveRing(cx,cy,innerR,outerScale,color1,color2){
+    const steps=BINS;
+    ctx.save();
+    ctx.beginPath();
+    for(let i=0;i<steps;i++){
+      const angle=(i/steps)*Math.PI*2-Math.PI/2;
+      const v=freq[i%BINS];
+      const r=innerR+v*outerScale;
+      const x2=cx+Math.cos(angle)*r;
+      const y2=cy+Math.sin(angle)*r;
+      i===0?ctx.moveTo(x2,y2):ctx.lineTo(x2,y2);
+    }
+    ctx.closePath();
+    const grad=ctx.createRadialGradient(cx,cy,innerR*.5,cx,cy,innerR+outerScale);
+    grad.addColorStop(0,color1);
+    grad.addColorStop(1,color2);
+    ctx.strokeStyle=grad;
+    ctx.lineWidth=2;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // Horizontal waveform at bottom
+  function drawWaveform(y,height,color,offset=0){
+    ctx.save();
+    ctx.beginPath();
+    for(let i=0;i<=W;i++){
+      const fi=Math.floor((i/W)*BINS);
+      const v=freq[fi%BINS];
+      const wy=y+Math.sin(i*.025+t*2+offset)*height*.3+v*height;
+      i===0?ctx.moveTo(i,wy):ctx.lineTo(i,wy);
+    }
+    ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();
+    ctx.fillStyle=color;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Vertical spectrum bars
+  function drawSpectrum(){
+    const barW=W/BINS*.9;
+    for(let i=0;i<BINS;i++){
+      const x2=i*(W/BINS);
+      const h=freq[i]*H*.55;
+      const hue=250+i*.8;
+      const sat=60+freq[i]*40;
+      const light=30+freq[i]*25;
+      ctx.fillStyle=`hsla(${hue},${sat}%,${light}%,${.12+freq[i]*.2})`;
+      ctx.fillRect(x2,H-h,barW,h);
+    }
+  }
+
+  function draw(){
+    t+=.012;
+    updateFreq();
+    W=cv.width;H=cv.height;
+
+    // Deep space bg
+    ctx.fillStyle='rgba(5,4,13,.92)';
+    ctx.fillRect(0,0,W,H);
+
+    // Stars
+    if(t<.1){
+      for(let s=0;s<200;s++){
+        const sx=Math.random()*W;
+        const sy=Math.random()*H;
+        const sr=Math.random()*1.5;
+        ctx.fillStyle=`rgba(255,255,255,${Math.random()*.3})`;
+        ctx.beginPath();ctx.arc(sx,sy,sr,0,Math.PI*2);ctx.fill();
+      }
+    }
+    ctx.fillStyle='rgba(5,4,13,.01)';ctx.fillRect(0,0,W,H); // fade stars slowly
+
+    // Spectrum bars
+    drawSpectrum();
+
+    // Waveform layers
+    drawWaveform(H*.75,60,'rgba(80,30,160,.12)',0);
+    drawWaveform(H*.82,40,'rgba(100,40,200,.1)',1.2);
+    drawWaveform(H*.88,30,'rgba(50,20,100,.15)',2.4);
+
+    // Central ring visualizer
+    const cx=W*.35, cy=H*.42;
+    const avgFreq=freq.reduce((a,b)=>a+b)/BINS;
+    const pulse=80+avgFreq*60;
+
+    // Outer glow
+    const gg=ctx.createRadialGradient(cx,cy,pulse*.5,cx,cy,pulse*2);
+    gg.addColorStop(0,`rgba(160,103,208,${.08+avgFreq*.08})`);
+    gg.addColorStop(1,'rgba(5,4,13,0)');
+    ctx.fillStyle=gg;
+    ctx.beginPath();ctx.arc(cx,cy,pulse*2,0,Math.PI*2);ctx.fill();
+
+    // Wave rings
+    drawWaveRing(cx,cy,pulse,100,`rgba(160,103,208,.6)`,`rgba(80,40,160,0)`);
+    drawWaveRing(cx,cy,pulse*.65,65,`rgba(200,120,255,.35)`,`rgba(60,20,120,0)`);
+    drawWaveRing(cx,cy,pulse*.38,40,`rgba(120,80,220,.5)`,`rgba(40,10,100,0)`);
+
+    // Center orb
+    const orbG=ctx.createRadialGradient(cx,cy,0,cx,cy,pulse*.5);
+    orbG.addColorStop(0,`rgba(220,160,255,${.15+avgFreq*.25})`);
+    orbG.addColorStop(.5,`rgba(120,60,200,${.08+avgFreq*.1})`);
+    orbG.addColorStop(1,'rgba(5,4,13,0)');
+    ctx.fillStyle=orbG;
+    ctx.beginPath();ctx.arc(cx,cy,pulse*.5,0,Math.PI*2);ctx.fill();
+
+    // Orbiting points
+    orbs.forEach((o,i)=>{
+      o.angle+=o.speed*.015;
+      const ox=cx+Math.cos(o.angle)*o.radius*(1+avgFreq*.3);
+      const oy=cy+Math.sin(o.angle)*o.radius*(1+avgFreq*.3)*.6;
+      const og=ctx.createRadialGradient(ox,oy,0,ox,oy,o.size*2);
+      og.addColorStop(0,o.col+(0.6+avgFreq*0.4)+')');
+      og.addColorStop(1,o.col+'0)');
+      ctx.fillStyle=og;
+      ctx.beginPath();ctx.arc(ox,oy,o.size*2,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=o.col+'0.8)';
+      ctx.beginPath();ctx.arc(ox,oy,o.size*.5,0,Math.PI*2);ctx.fill();
+    });
+
+    // Note particles
+    notes.forEach(n=>{
+      n.x+=n.vx+Math.sin(t*.5+n.y*.008)*.3;
+      n.y+=n.vy;
+      n.rot+=n.rotV;
+      if(n.y<-50){n.y=H+20;n.x=Math.random()*W;}
+      ctx.save();
+      ctx.translate(n.x,n.y);
+      ctx.rotate(n.rot);
+      ctx.font=`${n.size}px serif`;
+      ctx.fillStyle=n.col+(n.alpha+avgFreq*.3)+')';
+      ctx.textAlign='center';
+      ctx.fillText(n.sym,0,0);
+      ctx.restore();
+    });
+
+    // Horizontal scan line (retro touch)
+    const scanY=(t*60)%H;
+    ctx.fillStyle='rgba(160,103,208,.025)';
+    ctx.fillRect(0,scanY,W,2);
+
+    requestAnimationFrame(draw);
+  }
+  draw();
   window.addEventListener('resize',()=>{rsz();W=cv.width;H=cv.height;});
 })();
-}catch(e){console.warn("music error:", e.message||e);}
 
-// ══════════════════════════════════════════
-// SCROLL REVEALS
-// ══════════════════════════════════════════
-gsap.timeline({delay:.3})
-  .to('.h-eye',{opacity:1,y:0,duration:.9,ease:'power3.out'})
-  .to('.h-name',{opacity:1,y:0,duration:1.3,ease:'power3.out'},'-=.5')
-  .to('.h-tag',{opacity:1,y:0,duration:.8,ease:'power3.out'},'-=.5');
+// ══════════════════════════
+// CONTACT — subtle particle constellation
+// ══════════════════════════
+(function(){
+  const cv=document.getElementById('contact-canvas');
+  cv.style.position='absolute';cv.style.inset='0';
+  const ctx=cv.getContext('2d');
+  function rsz(){cv.width=cv.offsetWidth||window.innerWidth;cv.height=cv.offsetHeight||window.innerHeight;}rsz();
 
-document.querySelectorAll('.rv').forEach(el=>{
-  gsap.to(el,{opacity:1,y:0,duration:.9,ease:'power3.out',
-    scrollTrigger:{trigger:el,start:'top 88%',toggleActions:'play none none none'}
+  const pts=Array.from({length:50},()=>({x:Math.random(),y:Math.random(),vx:(Math.random()-.5)*.0003,vy:(Math.random()-.5)*.0003}));
+  let t=0;
+  function draw(){
+    t+=.005;
+    ctx.clearRect(0,0,cv.width,cv.height);
+    const W2=cv.width,H2=cv.height;
+    pts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>1)p.vx*=-1;
+      if(p.y<0||p.y>1)p.vy*=-1;
+    });
+    pts.forEach((a,i)=>pts.forEach((b,j)=>{
+      if(j<=i)return;
+      const dx=(a.x-b.x)*W2,dy=(a.y-b.y)*H2,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<160){
+        ctx.strokeStyle=`rgba(168,115,30,${(1-d/160)*.08})`;
+        ctx.lineWidth=.5;
+        ctx.beginPath();ctx.moveTo(a.x*W2,a.y*H2);ctx.lineTo(b.x*W2,b.y*H2);ctx.stroke();
+      }
+    }));
+    pts.forEach(p=>{
+      ctx.fillStyle='rgba(168,115,30,.15)';
+      ctx.beginPath();ctx.arc(p.x*W2,p.y*H2,2,0,Math.PI*2);ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize',rsz);
+})();
+
+// ══════════════════════════
+// HERO REVEAL
+// ══════════════════════════
+setTimeout(()=>{
+  document.querySelectorAll('.h-eye,.h-name,.h-tag').forEach((el,i)=>{
+    setTimeout(()=>{
+      el.style.transition='opacity .9s ease, transform .9s ease';
+      el.style.opacity='1';
+      el.style.transform='translateY(0)';
+    },i*220+200);
   });
-});
+},100);
+
+// ══════════════════════════
+// ABOUT — count up on visibility
+// ══════════════════════════
+const statDefs=[
+  {id:'cn1',target:9.13,dec:2},
+  {id:'cn2',target:4,dec:0},
+  {id:'cn3',target:10,dec:0},
+  {id:'cn4',target:1,dec:0},
+];
+let countersRun=false;
+const aboutSec=document.getElementById('about');
+const countObs=new IntersectionObserver(entries=>{
+  if(entries[0].isIntersecting&&!countersRun){
+    countersRun=true;
+    statDefs.forEach(d=>{
+      const el=document.getElementById(d.id);
+      if(!el)return;
+      el.textContent='0';
+      const dur=1600,start=performance.now();
+      (function frame(now){
+        const p=Math.min((now-start)/dur,1);
+        const ease=1-Math.pow(1-p,4);
+        el.textContent=(d.target*ease).toFixed(d.dec);
+        if(p<1)requestAnimationFrame(frame);
+      })(performance.now());
+    });
+  }
+},{threshold:.3,root:sc});
+countObs.observe(aboutSec);
+
+// Scroll reveal
+sc.addEventListener('scroll',()=>{
+  const scrollY=sc.scrollTop;
+  const vh=window.innerHeight;
+  sections.forEach(sec=>{
+    if(scrollY+vh*0.55>sec.offsetTop){
+      triggerReveal(sec);
+    }
+  });
+},{passive:true});
+
 </script>
 </body>
 </html>
